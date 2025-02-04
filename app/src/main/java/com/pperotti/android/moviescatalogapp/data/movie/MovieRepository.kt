@@ -1,5 +1,6 @@
 package com.pperotti.android.moviescatalogapp.data.movie
 
+import com.pperotti.android.moviescatalogapp.data.common.RepositoryResponse
 import com.pperotti.android.moviescatalogapp.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -16,7 +17,7 @@ interface MovieRepository {
      * Request the repository to retrieve information about movies from
      * the network or local storage.
      */
-    suspend fun fetchMovieList(): MovieResponse
+    suspend fun fetchMovieList(): RepositoryResponse<MovieListResult>
 }
 
 // Default implementation
@@ -25,19 +26,13 @@ class DefaultMovieRepository @Inject constructor(
     val remoteDataSource: MovieRemoteDataSource,
     @IoDispatcher val dispatcher: CoroutineDispatcher
 ) : MovieRepository{
-    override suspend fun fetchMovieList(): MovieResponse {
+    override suspend fun fetchMovieList(): RepositoryResponse<MovieListResult> {
         return withContext(dispatcher) {
             try {
-                MovieResponse.Success(remoteDataSource.fetchMovieList())
+                RepositoryResponse.Success(remoteDataSource.fetchMovieList())
             } catch (e: Exception) {
-                MovieResponse.Error(e.localizedMessage, e.cause)
+                RepositoryResponse.Error(e.localizedMessage, e.cause)
             }
         }
     }
-}
-
-// Response Wrapper
-sealed class MovieResponse {
-    data class Success(val movieListResult: MovieListResult) : MovieResponse()
-    data class Error(val message: String?, val cause: Throwable?) : MovieResponse()
 }
