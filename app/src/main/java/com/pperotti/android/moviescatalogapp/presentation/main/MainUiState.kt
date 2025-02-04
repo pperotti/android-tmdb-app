@@ -10,11 +10,12 @@ sealed class MainUiState {
 }
 
 /**
- * This represents an item
+ * This represents an item on the list
  */
 data class MainListItemUiState(
     val id: Int,
     val title: String?,
     val overview: String?,
-    val popularity: Float?
+    val popularity: Float?,
+    val posterPath: String?
 )

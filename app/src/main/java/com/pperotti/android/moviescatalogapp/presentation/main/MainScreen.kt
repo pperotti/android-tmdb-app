@@ -1,13 +1,13 @@
 package com.pperotti.android.moviescatalogapp.presentation.main
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,11 +31,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.pperotti.android.moviescatalogapp.R
 import com.pperotti.android.moviescatalogapp.presentation.common.ErrorContent
 import com.pperotti.android.moviescatalogapp.presentation.common.LoadingContent
@@ -124,16 +129,16 @@ fun CardItemComposable(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-//            AsyncImage(
-//                model = ImageRequest.Builder(LocalContext.current)
-//                    .data(item.breedImageUrl)
-//                    .crossfade(true)
-//                    .build(),
-//                contentDescription = item.breedName,
-//                modifier = Modifier
-//                    .width(80.dp)
-//                    .height(80.dp)
-//            )
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.posterPath)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = item.title,
+                modifier = Modifier
+                    .fillMaxWidth(0.3f)
+                    .fillMaxHeight()
+            )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(
@@ -142,16 +147,19 @@ fun CardItemComposable(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
-                Spacer(modifier = Modifier
-                    .background(color = MaterialTheme.colorScheme.primary)
-                    .fillMaxWidth()
-                    .height(2.dp)
+                Spacer(
+                    modifier = Modifier
+                        .background(color = MaterialTheme.colorScheme.primary)
+                        .fillMaxWidth()
+                        .height(2.dp)
                 )
                 Text(text = "Rating: ${item.popularity}")
                 Text(
                     text = item.overview ?: "-",
                     style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    maxLines = 5,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }

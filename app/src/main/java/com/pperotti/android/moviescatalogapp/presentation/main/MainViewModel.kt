@@ -45,7 +45,8 @@ class MainViewModel @Inject constructor(
                         id = movie.id,
                         title = movie.title,
                         overview = movie.overview,
-                        popularity = movie.popularity
+                        popularity = movie.popularity,
+                        posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}"
                     )
                 )
             }
