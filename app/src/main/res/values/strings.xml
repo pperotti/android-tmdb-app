@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">TMDB App</string>
+
+    <!-- Top Bar Titles -->
+    <string name="main_list_top_bar_title">Recent Movies</string>
+    <string name="movie_details_top_bar_title">Movie Details</string>
+
+    <!-- Content Descriptions -->
+    <string name="top_bar_back_button_description">Back</string>
+    <string name="details_screen_image_container_description">Movie Picture</string>
 </resources>

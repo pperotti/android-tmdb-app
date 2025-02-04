@@ -11,7 +11,7 @@ import javax.inject.Singleton
  * the listing of movies along with the details of each movie
  */
 interface MovieRepository {
-    suspend fun fetchMovieList(): ListResult
+    suspend fun fetchMovieList(): MovieListResult
 }
 
 // Default implementation
@@ -20,7 +20,7 @@ class DefaultMovieRepository @Inject constructor(
     val remoteDataSource: MovieRemoteDataSource,
     @IoDispatcher val dispatcher: CoroutineDispatcher
 ) : MovieRepository{
-    override suspend fun fetchMovieList(): ListResult {
+    override suspend fun fetchMovieList(): MovieListResult {
         return withContext(dispatcher) {
             remoteDataSource.fetchMovieList()
         }

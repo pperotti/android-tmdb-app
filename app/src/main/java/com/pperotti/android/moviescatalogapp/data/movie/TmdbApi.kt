@@ -9,5 +9,5 @@ interface TmdbApi {
     suspend fun fetchMovieList(
         @Query("include_adult") adult: Boolean,
         @Query("include_video") video: Boolean
-    ): ListResult
+    ): MovieListResult
 }

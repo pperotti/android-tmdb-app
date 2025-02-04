@@ -39,7 +39,7 @@ import com.google.gson.annotations.SerializedName
  * }
  * </code>
 */
-data class ListResult(
+data class MovieListResult(
     val page: Int,
     val results: List<MovieItem>,
     @SerializedName("total_pages") val totalPages: Int,
