@@ -7,6 +7,9 @@ interface MovieRemoteDataSource {
 
     /**
      * Retrieve the list of movies from the network
+     *
+     * @param includeAdult Determine whether it includes adult files or not
+     * @param includeVideo Determine whether it includes information about an associated video.
      */
     suspend fun fetchMovieList(includeAdult: Boolean = false, includeVideo: Boolean = false): MovieListResult
 }

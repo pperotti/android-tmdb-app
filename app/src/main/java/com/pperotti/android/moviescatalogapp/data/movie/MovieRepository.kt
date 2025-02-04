@@ -11,7 +11,12 @@ import javax.inject.Singleton
  * the listing of movies along with the details of each movie
  */
 interface MovieRepository {
-    suspend fun fetchMovieList(): MovieListResult
+
+    /**
+     * Request the repository to retrieve information about movies from
+     * the network or local storage.
+     */
+    suspend fun fetchMovieList(): MovieResponse
 }
 
 // Default implementation
@@ -20,9 +25,19 @@ class DefaultMovieRepository @Inject constructor(
     val remoteDataSource: MovieRemoteDataSource,
     @IoDispatcher val dispatcher: CoroutineDispatcher
 ) : MovieRepository{
-    override suspend fun fetchMovieList(): MovieListResult {
+    override suspend fun fetchMovieList(): MovieResponse {
         return withContext(dispatcher) {
-            remoteDataSource.fetchMovieList()
+            try {
+                MovieResponse.Success(remoteDataSource.fetchMovieList())
+            } catch (e: Exception) {
+                MovieResponse.Error(e.localizedMessage, e.cause)
+            }
         }
     }
+}
+
+// Response Wrapper
+sealed class MovieResponse {
+    data class Success(val movieListResult: MovieListResult) : MovieResponse()
+    data class Error(val message: String?, val cause: Throwable?) : MovieResponse()
 }

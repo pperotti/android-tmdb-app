@@ -8,4 +8,7 @@
     <!-- Content Descriptions -->
     <string name="top_bar_back_button_description">Back</string>
     <string name="details_screen_image_container_description">Movie Picture</string>
+
+    <!-- Generic Messages -->
+    <string name="error_no_description">We cannot retrieve the data at this time. Try again later</string>
 </resources>

@@ -1,9 +1,10 @@
 package com.pperotti.android.moviescatalogapp.presentation.main
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pperotti.android.moviescatalogapp.data.movie.MovieListResult
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
+import com.pperotti.android.moviescatalogapp.data.movie.MovieResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     val repository: MovieRepository
-): ViewModel() {
+) : ViewModel() {
 
     // A Job is required so you can cancel a running coroutine
     private var fetchJob: Job? = null
@@ -31,28 +32,34 @@ class MainViewModel @Inject constructor(
             // Indicates the UI that loading should be presented
             _uiState.value = MainUiState.Loading
 
-            val movieListResult = repository.fetchMovieList()
-            Log.d("VM", "MovieListResult - totalResults: ${movieListResult.totalResults}\n"
-                + "totalPages: ${movieListResult.totalPages}\n"
-                + "page#: ${movieListResult.page}"
-            )
-
-            val resultList: MutableList<MainListItemUiState> = mutableListOf()
-            movieListResult.results.forEach { movie ->
-                Log.d("VM", "Movie: ${movie.id} image: ${movie.title}")
-                resultList.add(
-                    MainListItemUiState(
-                        id = movie.id,
-                        title = movie.title,
-                        overview = movie.overview,
-                        popularity = movie.popularity,
-                        posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}"
+            when (val movieResponse = repository.fetchMovieList()) {
+                is MovieResponse.Success -> {
+                    handleSuccessResponse(movieResponse.movieListResult)
+                }
+                is MovieResponse.Error -> {
+                    _uiState.value = MainUiState.Error(
+                        movieResponse.message
                     )
-                )
+                }
             }
-
-            // Publish Items to the UI
-            _uiState.value = MainUiState.Success(items = resultList)
         }
+    }
+
+    private fun handleSuccessResponse(movieListResult: MovieListResult) {
+        val resultList: MutableList<MainListItemUiState> = mutableListOf()
+        movieListResult.results.forEach { movie ->
+            resultList.add(
+                MainListItemUiState(
+                    id = movie.id,
+                    title = movie.title,
+                    overview = movie.overview,
+                    popularity = movie.popularity,
+                    posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}"
+                )
+            )
+        }
+
+        // Publish Items to the UI
+        _uiState.value = MainUiState.Success(items = resultList)
     }
 }

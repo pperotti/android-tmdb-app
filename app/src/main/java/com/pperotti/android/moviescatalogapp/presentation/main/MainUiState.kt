@@ -6,7 +6,7 @@ package com.pperotti.android.moviescatalogapp.presentation.main
 sealed class MainUiState {
     data object Loading : MainUiState()
     data class Success(val items: List<MainListItemUiState>) : MainUiState()
-    data class Error(val message: String) : MainUiState()
+    data class Error(val message: String?) : MainUiState()
 }
 
 /**
