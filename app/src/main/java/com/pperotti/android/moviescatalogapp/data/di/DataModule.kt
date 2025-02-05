@@ -4,10 +4,15 @@ package com.pperotti.android.moviescatalogapp.data.di
  * This file contains all the Hilt Modules require to handle dependencies
  * on the Data Layer
  */
-
+import android.content.Context
+import androidx.room.Room
 import com.pperotti.android.moviescatalogapp.data.TmdbService
+import com.pperotti.android.moviescatalogapp.data.movie.DefaultMovieLocalDataSource
 import com.pperotti.android.moviescatalogapp.data.movie.DefaultMovieRemoteDataSource
 import com.pperotti.android.moviescatalogapp.data.movie.DefaultMovieRepository
+import com.pperotti.android.moviescatalogapp.data.movie.MovieDao
+import com.pperotti.android.moviescatalogapp.data.movie.MovieDatabase
+import com.pperotti.android.moviescatalogapp.data.movie.MovieLocalDataSource
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRemoteDataSource
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
 import com.pperotti.android.moviescatalogapp.data.movie.TmdbApi
@@ -15,6 +20,7 @@ import com.pperotti.android.moviescatalogapp.di.IoDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.Interceptor
@@ -95,27 +101,27 @@ class AuthInterceptor(val token: String) : Interceptor {
 @InstallIn(SingletonComponent::class)
 object DataModule {
 
-//    @Provides
-//    @Singleton
-//    fun provideBreedDatabase(@ApplicationContext context: Context): BreedDatabase {
-//        return Room.databaseBuilder(
-//            context,
-//            BreedDatabase::class.java,
-//            "breed_database"
-//        ).build()
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun provideBreedDao(database: BreedDatabase): BreedDao {
-//        return database.breedDao()
-//    }
-//
-//    @Provides
-//    @Singleton
-//    fun provideBreedLocalDataSource(breedDao: BreedDao): BreedLocalDataSource {
-//        return DefaultBreedLocalDataSource(breedDao)
-//    }
+    @Provides
+    @Singleton
+    fun provideMovieDatabase(@ApplicationContext context: Context): MovieDatabase {
+        return Room.databaseBuilder(
+            context,
+            MovieDatabase::class.java,
+            "movies_database"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMovieDao(database: MovieDatabase): MovieDao {
+        return database.movieDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMovieLocalDataSource(movieDao: MovieDao): MovieLocalDataSource {
+        return DefaultMovieLocalDataSource(movieDao)
+    }
 
     @Provides
     @Singleton
@@ -125,12 +131,15 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideBreedRepository(
-        //localDataSource: BreedLocalDataSource,
+    fun provideMovieRepository(
+        localDataSource: MovieLocalDataSource,
         remoteDataSource: MovieRemoteDataSource,
         @IoDispatcher dispatcher: CoroutineDispatcher
     ): MovieRepository {
-        return DefaultMovieRepository(remoteDataSource, dispatcher)
+        return DefaultMovieRepository(
+            localDataSource,
+            remoteDataSource,
+            dispatcher
+        )
     }
-
 }

@@ -1,5 +1,6 @@
 package com.pperotti.android.moviescatalogapp.data.movie
 
+import android.util.Log
 import com.pperotti.android.moviescatalogapp.data.common.RepositoryResponse
 import com.pperotti.android.moviescatalogapp.di.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
@@ -34,6 +35,7 @@ interface MovieRepository {
 // Default implementation
 @Singleton
 class DefaultMovieRepository @Inject constructor(
+    val localDataSource: MovieLocalDataSource,
     val remoteDataSource: MovieRemoteDataSource,
     @IoDispatcher val dispatcher: CoroutineDispatcher
 ) : MovieRepository {
@@ -41,7 +43,11 @@ class DefaultMovieRepository @Inject constructor(
     override suspend fun fetchMovieList(): RepositoryResponse<MovieListResult> {
         return withContext(dispatcher) {
             try {
-                RepositoryResponse.Success(remoteDataSource.fetchMovieList())
+                if (!localDataSource.hasMovieListResult()) {
+                    val movieResultList = remoteDataSource.fetchMovieList()
+                    localDataSource.saveMovieListResult(movieResultList)
+                }
+                RepositoryResponse.Success(localDataSource.getMovieListResult())
             } catch (e: Exception) {
                 e.printStackTrace()
                 RepositoryResponse.Error(e.localizedMessage, e.cause)
