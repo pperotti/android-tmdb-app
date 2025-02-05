@@ -1,7 +1,6 @@
 package com.pperotti.android.moviescatalogapp.presentation.details
 
 import android.content.res.Configuration
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,11 +37,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,6 +49,8 @@ import coil3.request.crossfade
 import com.pperotti.android.moviescatalogapp.R
 import com.pperotti.android.moviescatalogapp.presentation.common.ErrorContent
 import com.pperotti.android.moviescatalogapp.presentation.common.LoadingContent
+import com.pperotti.android.moviescatalogapp.presentation.common.MessageItemComposable
+import com.pperotti.android.moviescatalogapp.presentation.common.TextWithIconRowComposable
 
 /**
  * Show the details of the movie or an error
@@ -193,52 +192,24 @@ fun DrawDetailsContent(uiState: DetailsUiState.Success, modifier: Modifier) {
             .fillMaxWidth()
             .height(2.dp)
     )
-    MessageItem(R.string.details_imdb_id, uiState.details.imdbId ?: "-")
-    MessageItem(R.string.details_homepage, uiState.details.homepage ?: "-")
-    MessageItem(R.string.details_overview, uiState.details.overview ?: "-")
-    MessageItem(R.string.details_revenue, uiState.details.revenue.toString())
-    MessageItem(R.string.details_status, uiState.details.status ?: "-")
-    MessageItem(R.string.details_vote_average, uiState.details.voteAverage.toString())
-    MessageItem(R.string.details_vote_count, uiState.details.voteCount.toString())
-}
-
-@Composable
-fun MessageItem(
-    @StringRes textRes: Int,
-    value: String?
-) {
-    val title = LocalContext.current.getString(textRes)
-    val textValue = if (value?.isEmpty() == true) {
-        "-"
-    } else {
-        value
-    }
-    val annotatedString = buildAnnotatedString {
-        withStyle(
-            style = MaterialTheme
-                .typography
-                .bodyMedium
-                .toSpanStyle()
-                .copy(fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        ) {
-            append(title)
-        }
-        withStyle(
-            style = MaterialTheme
-                .typography
-                .bodyMedium
-                .toSpanStyle()
-                .copy(fontWeight = FontWeight.Normal, fontSize = 18.sp)
-        ) {
-            append(textValue)
-        }
-    }
-    Text(
-        text = annotatedString,
-        fontSize = 10.sp,
+    MessageItemComposable(R.string.details_imdb_id, uiState.details.imdbId ?: "-")
+    MessageItemComposable(R.string.details_homepage, uiState.details.homepage ?: "-")
+    MessageItemComposable(R.string.details_overview, uiState.details.overview ?: "-")
+    MessageItemComposable(R.string.details_revenue, uiState.details.revenue.toString())
+    MessageItemComposable(R.string.details_status, uiState.details.status ?: "-")
+    MessageItemComposable(R.string.details_vote_average, uiState.details.voteAverage.toString())
+    MessageItemComposable(R.string.details_vote_count, uiState.details.voteCount.toString())
+    Spacer(
         modifier = Modifier
             .padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp))
+            .background(color = MaterialTheme.colorScheme.secondary)
+            .fillMaxWidth()
+            .height(1.dp)
     )
+    MessageItemComposable(R.string.details_genres, "")
+    uiState.details.genres.forEach {
+        TextWithIconRowComposable(it.name ?: "-")
+    }
 }
 
 

@@ -19,5 +19,6 @@
     <string name="details_status">Status: </string>
     <string name="details_vote_average">Average Votes: </string>
     <string name="details_vote_count">Vote Count: </string>
-    <string name="details_homepage">"Website: "</string>
+    <string name="details_homepage">Website: </string>
+    <string name="details_genres">Genres</string>
 </resources>

@@ -6,11 +6,12 @@
     <string name="top_bar_back_button_description">Atrás</string>
     <string name="details_screen_image_container_description">Imagen de la Película</string>
     <string name="error_no_description">No podemos obtener los datos solicitados en este moment. Inténtelo nuevamente más tarde.</string>
-    <string name="details_imdb_id">ID IMDb:</string>
-    <string name="details_vote_count">Cantidad Votos:</string>
-    <string name="details_homepage">Sitio Web:</string>
-    <string name="details_overview">Resumen:</string>
+    <string name="details_imdb_id">ID IMDb: </string>
+    <string name="details_vote_count">Cantidad Votos: </string>
+    <string name="details_homepage">Sitio Web: </string>
+    <string name="details_overview">Resumen: </string>
     <string name="details_revenue">Ganancias $</string>
-    <string name="details_status">Estado:</string>
+    <string name="details_status">Estado: </string>
     <string name="details_vote_average">Promedio Votos:</string>
+    <string name="details_genres">"Géneros"</string>
 </resources>
