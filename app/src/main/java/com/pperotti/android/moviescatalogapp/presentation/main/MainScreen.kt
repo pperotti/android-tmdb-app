@@ -80,6 +80,7 @@ fun DrawScreenContent(
                 modifier = modifier.padding(paddingValues),
                 onMovieSelected = onMovieSelected
             )
+
             is MainUiState.Error -> ErrorContent(uiState.message, modifier)
         }
     }

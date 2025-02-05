@@ -1,6 +1,7 @@
 package com.pperotti.android.moviescatalogapp.presentation.di
 
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
+import com.pperotti.android.moviescatalogapp.presentation.details.DetailsViewModel
 import com.pperotti.android.moviescatalogapp.presentation.main.MainViewModel
 import dagger.Module
 import dagger.Provides
@@ -20,5 +21,10 @@ class PresentationModule {
     @Singleton
     fun provideMainViewModel(movieRepository: MovieRepository): MainViewModel {
         return MainViewModel(movieRepository)
+    }
+
+    @Provides
+    fun provideDetailsViewModel(movieRepository: MovieRepository): DetailsViewModel {
+        return DetailsViewModel(movieRepository)
     }
 }

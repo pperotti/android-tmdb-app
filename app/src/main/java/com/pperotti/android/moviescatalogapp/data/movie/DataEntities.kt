@@ -189,11 +189,11 @@ data class SpokenLanguage(
 data class MovieDetails(
     val adult: Boolean,
     @SerializedName("backdropPath") val backdropPath: String?,
-    @SerializedName("belongs_to_collection") val belongsToCollection: List<MovieCollection>?,
+    @SerializedName("belongs_to_collection") val belongsToCollection: MovieCollection?,
     val budget: Long?,
     val genres: List<MovieGenre>?,
     val homepage: String?,
-    val id: String?,
+    val id: Int,
     val imdbId: String?,
     @SerializedName("origin_country") val originCountry: List<String>?,
     @SerializedName("original_language") val originalLanguage: String?,

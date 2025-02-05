@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.pperotti.android.moviescatalogapp.presentation.details.DetailsScreen
 import com.pperotti.android.moviescatalogapp.presentation.main.MainScreen
 
 @Composable
@@ -29,12 +30,12 @@ fun SetupNavigation() {
         ) {
             val id = it.arguments?.getInt("id")
             requireNotNull(id)
-//            DetailsScreen(
-//                id = id,
-//                onNavigation = {
-//                    navController.popBackStack()
-//                }
-//            )
+            DetailsScreen(
+                id = id,
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }

@@ -33,9 +33,8 @@ class MainViewModel @Inject constructor(
             _uiState.value = MainUiState.Loading
 
             when (val movieResponse = repository.fetchMovieList()) {
-                is RepositoryResponse.Success -> {
-                    handleSuccessResponse(movieResponse.result)
-                }
+                is RepositoryResponse.Success ->
+                    transformSuccessResponse(movieResponse.result)
 
                 is RepositoryResponse.Error -> {
                     _uiState.value = MainUiState.Error(
@@ -46,7 +45,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun handleSuccessResponse(movieListResult: MovieListResult) {
+    private fun transformSuccessResponse(movieListResult: MovieListResult) {
         val resultList: MutableList<MainListItemUiState> = mutableListOf()
         movieListResult.results.forEach { movie ->
             resultList.add(

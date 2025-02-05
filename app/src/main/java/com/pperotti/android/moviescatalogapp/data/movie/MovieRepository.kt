@@ -16,8 +16,19 @@ interface MovieRepository {
     /**
      * Request the repository to retrieve information about movies from
      * the network or local storage.
+     *
+     * @return MovieListResult encapsulated inside a RepositoryResponse
      */
     suspend fun fetchMovieList(): RepositoryResponse<MovieListResult>
+
+    /**
+     * Retrieves from the network the details for the movie with the specified id.
+     *
+     * @param id The Int value that identifies the movie.
+     *
+     * @return MovieDetails encapsulated inside a RepositoryResponse
+     */
+    suspend fun fetchMovieDetails(id: Int): RepositoryResponse<MovieDetails>
 }
 
 // Default implementation
@@ -25,12 +36,25 @@ interface MovieRepository {
 class DefaultMovieRepository @Inject constructor(
     val remoteDataSource: MovieRemoteDataSource,
     @IoDispatcher val dispatcher: CoroutineDispatcher
-) : MovieRepository{
+) : MovieRepository {
+
     override suspend fun fetchMovieList(): RepositoryResponse<MovieListResult> {
         return withContext(dispatcher) {
             try {
                 RepositoryResponse.Success(remoteDataSource.fetchMovieList())
             } catch (e: Exception) {
+                e.printStackTrace()
+                RepositoryResponse.Error(e.localizedMessage, e.cause)
+            }
+        }
+    }
+
+    override suspend fun fetchMovieDetails(id: Int): RepositoryResponse<MovieDetails> {
+        return withContext(dispatcher) {
+            try {
+                RepositoryResponse.Success(remoteDataSource.fetchMovieDetails(id))
+            } catch (e: Exception) {
+                e.printStackTrace()
                 RepositoryResponse.Error(e.localizedMessage, e.cause)
             }
         }
