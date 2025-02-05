@@ -21,7 +21,7 @@ class DetailsViewModel @Inject constructor(
     private var fetchJob: Job? = null
 
     // StateFlow to hold the UI state
-    private val _uiState = MutableStateFlow<DetailsUiState>(DetailsUiState.Idle)
+    private val _uiState = MutableStateFlow<DetailsUiState>(DetailsUiState.Loading)
     val uiState: StateFlow<DetailsUiState> get() = _uiState
 
     // Fetch Details
@@ -30,7 +30,7 @@ class DetailsViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
 
             // Indicates the UI that loading should be presented
-            _uiState.value = DetailsUiState.Loading(requestId = id)
+            _uiState.value = DetailsUiState.Loading
 
             // Retrieves the data
             when (val detailsResponse = repository.fetchMovieDetails(id)) {
@@ -39,7 +39,6 @@ class DetailsViewModel @Inject constructor(
 
                 is RepositoryResponse.Error -> {
                     _uiState.value = DetailsUiState.Error(
-                        requestId = id,
                         message = detailsResponse.message
                     )
                 }
@@ -69,7 +68,6 @@ class DetailsViewModel @Inject constructor(
 
         // Publish items tot he UI
         _uiState.value = DetailsUiState.Success(
-            requestId = movieDetails.id,
             details = detailsUiData
         )
     }

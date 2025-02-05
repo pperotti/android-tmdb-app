@@ -68,13 +68,12 @@ fun DetailsScreen(
 
     // Collect Data from viewModel
     detailsViewModel.uiState.collectAsState().value.let { state ->
-        DrawScreenContent(id, state, modifier, onBack)
+        DrawScreenContent(state, modifier, onBack)
     }
 }
 
 @Composable
 fun DrawScreenContent(
-    requestId: Int,
     uiState: DetailsUiState,
     modifier: Modifier,
     onBack: () -> Unit
@@ -89,13 +88,8 @@ fun DrawScreenContent(
         }
     ) { paddingValues ->
         when (uiState) {
-            is DetailsUiState.Loading, DetailsUiState.Idle -> LoadingContent(modifier)
-            is DetailsUiState.Success -> {
-                if (uiState.details.id == requestId) {
-                    SuccessContent(uiState, paddingValues, modifier)
-                }
-            }
-
+            is DetailsUiState.Loading -> LoadingContent(modifier)
+            is DetailsUiState.Success -> SuccessContent(uiState, paddingValues, modifier)
             is DetailsUiState.Error -> ErrorContent(uiState.message, modifier)
         }
     }

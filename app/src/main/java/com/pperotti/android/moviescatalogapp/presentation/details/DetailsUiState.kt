@@ -1,11 +1,10 @@
 package com.pperotti.android.moviescatalogapp.presentation.details
 
 // State used for the UI drawing the details
-sealed class DetailsUiState(val id: Int) {
-    object Idle : DetailsUiState(-1)
-    data class Loading(val requestId: Int) : DetailsUiState(requestId)
-    data class Success(val requestId: Int, val details: DetailsUiData) : DetailsUiState(requestId)
-    data class Error(val requestId: Int, val message: String?) : DetailsUiState(requestId)
+sealed class DetailsUiState() {
+    object Loading : DetailsUiState()
+    data class Success(val details: DetailsUiData) : DetailsUiState()
+    data class Error(val message: String?) : DetailsUiState()
 }
 
 // Data Container with the information relevant to the UI
