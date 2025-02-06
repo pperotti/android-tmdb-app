@@ -27,6 +27,7 @@ The application allows the user:
 * Display the labels used in the application in English or Spanish.
 
 ## Key Technical Decisions
+
 * Jetpack Compose
 * Kotlin
 * Code organized following latest Google's Architecture Guideline
