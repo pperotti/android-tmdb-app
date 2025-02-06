@@ -4,7 +4,8 @@
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Screenshots/Gifs](#screenshots-gifs)
+- [Key Technical Decisions](#key-technical-decisions)
+- [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
@@ -14,22 +15,35 @@
 
 ## Introduction
 
-The application created in this repo is a mere interview exercise which intend is to reflect
-how a modern application should be structured.
+The application created in this repo is a demo application which intention is to reflect
+how a modern application should be structured. 
 
 ## Features
 
-The application allows the user user:
-* To see a list of movies using a predefined criteria which can then be modified using menu options from this screen.
+The application allows the user:
+* To see a list of latest movies as defined by the TMDBApi.  
 * To see the details of such movies when each of them are selected.
 * Display the data in a way that can be read correctly depending on the orientation.
+* Display the labels used in the application in English or Spanish.
 
-## Screenshots/Gifs
+## Key Technical Decisions
+* Jetpack Compose
+* Kotlin
+* Code organized following latest Google's Architecture Guideline
+* Unidirectional Data Flow
+* Dependency Injection
+* Storage Support using Room
 
-Include screenshots or GIFs to demonstrate the functionality of your app.
+All the explanation about each of the previous points will be addressed in the following [document](https://docs.google.com/document/d/1e8XEd2p1_ovLGcSCk9dVSUNOnhI3ZvHp36kxN9XKEbQ/edit?usp=sharing)
 
-![Screenshot](/path/to/screenshot.png)
-![GIF](/path/to/gif.gif)
+## Screenshots
+Here are some screenshots of the app.
+
+![Logo](/documentation/images/TMDB_Logo.png)
+![Main Screen](/documentation/images/latest_movies.png)
+![Details Screen](/documentation/images/movie_details.png)
+![Main Screen - Landscape](/documentation/images/latest_movies_landscape.png)
+![Details Screen - Landscape](/documentation/images/movie_details_landscape.png)
 
 ## Getting Started
 
