@@ -16,12 +16,12 @@
 ## Introduction
 
 The application created in this repo is a demo application which intention is to reflect
-how a modern application should be structured. 
+how a modern application should be structured.
 
 ## Features
 
 The application allows the user:
-* To see a list of latest movies as defined by the TMDBApi.  
+* To see a list of latest movies as defined by the TMDBApi.
 * To see the details of such movies when each of them are selected.
 * Display the data in a way that can be read correctly depending on the orientation.
 * Display the labels used in the application in English or Spanish.
@@ -70,9 +70,9 @@ Provide step-by-step instructions on how to set up and run your project.
 
 ## Usage
 
-All you have to do is selecting the app's icon and wait for the app to load the list of most recent movies available. 
+All you have to do is selecting the app's icon and wait for the app to load the list of most recent movies available.
 
-Once the list is displayed, you can select an invididual movie to see its details. 
+Once the list is displayed, you can select an invididual movie to see its details.
 
 All screens support a personalized dispalyed depending on the device's orientation.
 
