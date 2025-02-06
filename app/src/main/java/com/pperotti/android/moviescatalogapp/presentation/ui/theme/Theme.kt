@@ -1,4 +1,4 @@
-package com.pperotti.android.moviescatalogapp.ui.theme
+package com.pperotti.android.moviescatalogapp.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

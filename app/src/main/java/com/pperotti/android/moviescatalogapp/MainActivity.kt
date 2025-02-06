@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.pperotti.android.moviescatalogapp.navigation.SetupNavigation
-import com.pperotti.android.moviescatalogapp.ui.theme.MoviesCatalogAppTheme
+import com.pperotti.android.moviescatalogapp.presentation.navigation.SetupNavigation
+import com.pperotti.android.moviescatalogapp.presentation.ui.theme.MoviesCatalogAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

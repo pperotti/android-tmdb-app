@@ -1,4 +1,4 @@
-package com.pperotti.android.moviescatalogapp.navigation
+package com.pperotti.android.moviescatalogapp.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
