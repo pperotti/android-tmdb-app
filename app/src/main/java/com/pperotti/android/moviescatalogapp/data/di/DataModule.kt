@@ -41,7 +41,7 @@ object ApiModule {
     // WARNING: This value should not be hardcoded due to security concerns. This value should be
     // received via a config service like remote config or similar
     private const val TOKEN =
-        "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2NDUxY2VjNmM5MTZiZmYzOWM2YTQwNTZhY2E4MDA4OSIsIm5iZiI6MTU0NzA0MjI4OC40NDQsInN1YiI6IjVjMzVmZGYwYzNhMzY4MjcyNDFiZWIyZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.1Ve-Aft6IcP7ng9GgvzCykTVzbpHXltbAI9M2o1yXso"
+        "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5YWVmNWZhNTk4YmI0MGJiYWNiZWE3M2U2MzIzYTk3NCIsIm5iZiI6MTU0NzA0MjI4OC40NDQsInN1YiI6IjVjMzVmZGYwYzNhMzY4MjcyNDFiZWIyZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.leIRuvYh31xW3GXpEYgj10lgCfF7Qmrrnmm7z57lN5c"
 
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
