@@ -1,4 +1,4 @@
-# The Movies Catalog Application
+# The MovieDB Android Application (TMDBApp)
 
 ## Table of Contents
 
