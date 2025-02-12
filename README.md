@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [API Key](#api-key)
 - [Features](#features)
 - [Key Technical Decisions](#key-technical-decisions)
 - [Screenshots](#screenshots)
@@ -17,6 +18,12 @@
 
 The application created in this repo is a demo application which intention is to reflect
 how a modern application should be structured.
+
+## API Key
+
+IMPORTANT! The hardcoded API key available in DataModule.kt is expired. Since this is a sample app,
+there is no infrastructure set in place to make this received via a different mechanism. To run 
+the app, this key should be replaced by a valid one. 
 
 ## Features
 
