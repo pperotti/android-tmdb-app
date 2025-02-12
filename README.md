@@ -37,6 +37,8 @@ The application allows the user:
 
 All the explanation about each of the previous points will be addressed in the following [document](https://docs.google.com/document/d/1e8XEd2p1_ovLGcSCk9dVSUNOnhI3ZvHp36kxN9XKEbQ/edit?usp=sharing)
 
+You can find more information in the "PROJECT - The MovieDB App.pdf" file. 
+
 ## Screenshots
 Here are some screenshots of the app.
 
