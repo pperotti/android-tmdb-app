@@ -1,13 +1,13 @@
 package com.pperotti.android.moviescatalogapp.presentation.di
 
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
+import com.pperotti.android.moviescatalogapp.domain.usecase.GetLatestMovies
 import com.pperotti.android.moviescatalogapp.presentation.details.DetailsViewModel
 import com.pperotti.android.moviescatalogapp.presentation.main.MainViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 /**
  * This file contains the Hilt module definition for all dependencies
@@ -18,9 +18,8 @@ import javax.inject.Singleton
 class PresentationModule {
 
     @Provides
-    @Singleton
-    fun provideMainViewModel(movieRepository: MovieRepository): MainViewModel {
-        return MainViewModel(movieRepository)
+    fun provideMainViewModel(getLatestMovies: GetLatestMovies): MainViewModel {
+        return MainViewModel(getLatestMovies)
     }
 
     @Provides

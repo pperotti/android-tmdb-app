@@ -2,9 +2,9 @@ package com.pperotti.android.moviescatalogapp.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pperotti.android.moviescatalogapp.data.common.DataResult
-import com.pperotti.android.moviescatalogapp.data.movie.MovieListResult
-import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
+import com.pperotti.android.moviescatalogapp.domain.common.DomainMovieListResult
+import com.pperotti.android.moviescatalogapp.domain.common.DomainResult
+import com.pperotti.android.moviescatalogapp.domain.usecase.GetLatestMovies
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val repository: MovieRepository
+    val getLatestMovies: GetLatestMovies
 ) : ViewModel() {
 
     // A Job is required so you can cancel a running coroutine
@@ -32,22 +32,22 @@ class MainViewModel @Inject constructor(
             // Indicates the UI that loading should be presented
             _uiState.value = MainUiState.Loading
 
-            when (val movieResponse = repository.fetchMovieList()) {
-                is DataResult.Success ->
-                    transformSuccessResponse(movieResponse.result)
+            when (val domainResponse = getLatestMovies.getLatestMovies()) {
+                is DomainResult.Success ->
+                    transformDomainResultIntoUiResult(domainResponse.result)
 
-                is DataResult.Error -> {
+                is DomainResult.Error -> {
                     _uiState.value = MainUiState.Error(
-                        movieResponse.message
+                        domainResponse.message
                     )
                 }
             }
         }
     }
 
-    private fun transformSuccessResponse(movieListResult: MovieListResult) {
+    private fun transformDomainResultIntoUiResult(domainMovieListResult: DomainMovieListResult) {
         val resultList: MutableList<MainListItemUiState> = mutableListOf()
-        movieListResult.results.forEach { movie ->
+        domainMovieListResult.results.forEach { movie ->
             resultList.add(
                 MainListItemUiState(
                     id = movie.id,

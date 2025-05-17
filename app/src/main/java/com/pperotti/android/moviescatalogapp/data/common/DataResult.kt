@@ -3,7 +3,7 @@ package com.pperotti.android.moviescatalogapp.data.common
 /**
  * Generic Result Wrapper that can be reused by more than one repo within the data layer
  *
- * @property T The type of the data offered
+ * @property T The type of the data offered by this layer.
  */
 sealed class DataResult<T> {
 

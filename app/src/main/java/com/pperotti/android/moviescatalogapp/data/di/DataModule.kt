@@ -85,7 +85,6 @@ class AuthInterceptor(val token: String) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest: Request = chain.request()
 
-
         // Add authentication headers
         val authenticatedRequest: Request = originalRequest.newBuilder()
             .header("Authorization", "Bearer $token")
