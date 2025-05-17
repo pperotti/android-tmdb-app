@@ -2,9 +2,9 @@ package com.pperotti.android.moviescatalogapp.presentation.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pperotti.android.moviescatalogapp.data.common.DataResult
-import com.pperotti.android.moviescatalogapp.data.movie.MovieDetails
-import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
+import com.pperotti.android.moviescatalogapp.domain.common.DomainMovieDetails
+import com.pperotti.android.moviescatalogapp.domain.common.DomainResult
+import com.pperotti.android.moviescatalogapp.domain.usecase.GetMovieDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailsViewModel @Inject constructor(
-    val repository: MovieRepository
+    val getMovieDetails: GetMovieDetails
 ) : ViewModel() {
 
     // A Job is required so you can cancel a running coroutine
@@ -33,13 +33,13 @@ class DetailsViewModel @Inject constructor(
             _uiState.value = DetailsUiState.Loading
 
             // Retrieves the data
-            when (val detailsResponse = repository.fetchMovieDetails(id)) {
-                is DataResult.Success ->
-                    transformSuccessResponse(detailsResponse.result)
+            when (val domainResult = getMovieDetails.getMovieDetails(id)) {
+                is DomainResult.Success ->
+                    transformSuccessResponse(domainResult.result)
 
-                is DataResult.Error -> {
+                is DomainResult.Error -> {
                     _uiState.value = DetailsUiState.Error(
-                        message = detailsResponse.message
+                        message = domainResult.message
                     )
                 }
             }
@@ -51,19 +51,19 @@ class DetailsViewModel @Inject constructor(
         fetchJob?.cancel()
     }
 
-    private fun transformSuccessResponse(movieDetails: MovieDetails) {
+    private fun transformSuccessResponse(domainMovieDetails: DomainMovieDetails) {
         val detailsUiData = DetailsUiData(
-            id = movieDetails.id,
-            imdbId = movieDetails.imdbId,
-            homepage = movieDetails.homepage,
-            overview = movieDetails.overview,
-            posterPath = "https://image.tmdb.org/t/p/w200/${movieDetails.posterPath}",
-            genres = movieDetails.genres?.map { DetailsUiGenre(it.id, it.name) } ?: emptyList(),
-            title = movieDetails.title,
-            revenue = movieDetails.revenue,
-            status = movieDetails.status,
-            voteAverage = movieDetails.voteAverage,
-            voteCount = movieDetails.voteCount,
+            id = domainMovieDetails.id,
+            imdbId = domainMovieDetails.imdbId,
+            homepage = domainMovieDetails.homepage,
+            overview = domainMovieDetails.overview,
+            posterPath = domainMovieDetails.posterPath,
+            genres = domainMovieDetails.genres.map { DetailsUiGenre(it.id, it.name) },
+            title = domainMovieDetails.title,
+            revenue = domainMovieDetails.revenue,
+            status = domainMovieDetails.status,
+            voteAverage = domainMovieDetails.voteAverage,
+            voteCount = domainMovieDetails.voteCount,
         )
 
         // Publish items tot he UI
