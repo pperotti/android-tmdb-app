@@ -3,8 +3,6 @@ package com.pperotti.android.moviescatalogapp.domain.usecase
 import com.pperotti.android.moviescatalogapp.data.common.DataResult
 import com.pperotti.android.moviescatalogapp.data.movie.MovieListResult
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
-import com.pperotti.android.moviescatalogapp.domain.common.DomainMovieItem
-import com.pperotti.android.moviescatalogapp.domain.common.DomainMovieListResult
 import com.pperotti.android.moviescatalogapp.domain.common.DomainResult
 import javax.inject.Inject
 
@@ -31,6 +29,7 @@ class DefaultGetLatestMovies @Inject constructor(
         return when (val movieResponse = repository.fetchMovieList()) {
             is DataResult.Success ->
                 transformDataResultIntoDomainResult(movieResponse.result)
+
             is DataResult.Error -> {
                 DomainResult.Error(
                     movieResponse.message, movieResponse.cause
@@ -63,5 +62,25 @@ class DefaultGetLatestMovies @Inject constructor(
             )
         )
     }
-
 }
+
+/**
+ * Container for the list of movies from the domain's point of view
+ */
+data class DomainMovieListResult(
+    val page: Int,
+    val results: List<DomainMovieItem>,
+    val totalPages: Int,
+    val totalResults: Int
+)
+
+/**
+ * Movie Item from the domain's point of view
+ */
+data class DomainMovieItem(
+    val id: Int,
+    val title: String?,
+    val overview: String?,
+    val popularity: Float?,
+    val posterPath: String?
+)

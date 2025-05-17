@@ -2,8 +2,8 @@ package com.pperotti.android.moviescatalogapp.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pperotti.android.moviescatalogapp.domain.common.DomainMovieListResult
 import com.pperotti.android.moviescatalogapp.domain.common.DomainResult
+import com.pperotti.android.moviescatalogapp.domain.usecase.DomainMovieListResult
 import com.pperotti.android.moviescatalogapp.domain.usecase.GetLatestMovies
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job

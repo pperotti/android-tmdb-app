@@ -3,8 +3,6 @@ package com.pperotti.android.moviescatalogapp.domain.usecase
 import com.pperotti.android.moviescatalogapp.data.common.DataResult
 import com.pperotti.android.moviescatalogapp.data.movie.MovieDetails
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
-import com.pperotti.android.moviescatalogapp.domain.common.DomainMovieDetails
-import com.pperotti.android.moviescatalogapp.domain.common.DomainMovieGenre
 import com.pperotti.android.moviescatalogapp.domain.common.DomainResult
 import javax.inject.Inject
 
@@ -22,6 +20,9 @@ interface GetMovieDetails {
     suspend fun getMovieDetails(id: Int): DomainResult<DomainMovieDetails>
 }
 
+/**
+ * Default implementation for GetMovieDetails interface
+ */
 class DefaultGetMovieDetails @Inject constructor(
     val repository: MovieRepository
 ) : GetMovieDetails {
@@ -60,4 +61,29 @@ class DefaultGetMovieDetails @Inject constructor(
         )
     }
 }
+
+/**
+ * Container for the details of the movie
+ */
+data class DomainMovieDetails(
+    val id: Int,
+    val imdbId: String?,
+    val homepage: String?,
+    val overview: String?,
+    val posterPath: String?,
+    val genres: List<DomainMovieGenre>,
+    val title: String?,
+    val revenue: Long,
+    val status: String?,
+    val voteAverage: Float?,
+    val voteCount: Int
+)
+
+/**
+ * Wrapper for movie genre
+ */
+data class DomainMovieGenre(
+    val id: Int,
+    val name: String?
+)
 

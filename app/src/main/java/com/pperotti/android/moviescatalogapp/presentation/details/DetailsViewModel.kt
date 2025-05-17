@@ -2,8 +2,8 @@ package com.pperotti.android.moviescatalogapp.presentation.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pperotti.android.moviescatalogapp.domain.common.DomainMovieDetails
 import com.pperotti.android.moviescatalogapp.domain.common.DomainResult
+import com.pperotti.android.moviescatalogapp.domain.usecase.DomainMovieDetails
 import com.pperotti.android.moviescatalogapp.domain.usecase.GetMovieDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
