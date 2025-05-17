@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.pperotti.android.moviescatalogapp.R
 
 @Composable
-fun ErrorContent(message: String?, modifier: Modifier) {
+fun ErrorContent(modifier: Modifier, message: String?) {
     Box(
         modifier = modifier
             .fillMaxSize()

@@ -2,7 +2,7 @@ package com.pperotti.android.moviescatalogapp.presentation.details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pperotti.android.moviescatalogapp.data.common.RepositoryResponse
+import com.pperotti.android.moviescatalogapp.data.common.DataResult
 import com.pperotti.android.moviescatalogapp.data.movie.MovieDetails
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,10 +34,10 @@ class DetailsViewModel @Inject constructor(
 
             // Retrieves the data
             when (val detailsResponse = repository.fetchMovieDetails(id)) {
-                is RepositoryResponse.Success ->
+                is DataResult.Success ->
                     transformSuccessResponse(detailsResponse.result)
 
-                is RepositoryResponse.Error -> {
+                is DataResult.Error -> {
                     _uiState.value = DetailsUiState.Error(
                         message = detailsResponse.message
                     )

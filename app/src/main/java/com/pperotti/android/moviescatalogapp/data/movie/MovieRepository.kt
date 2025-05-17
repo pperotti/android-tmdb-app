@@ -1,8 +1,6 @@
 package com.pperotti.android.moviescatalogapp.data.movie
 
-import android.util.Log
-import com.pperotti.android.moviescatalogapp.data.common.RepositoryResponse
-import com.pperotti.android.moviescatalogapp.di.IoDispatcher
+import com.pperotti.android.moviescatalogapp.data.common.DataResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -20,7 +18,7 @@ interface MovieRepository {
      *
      * @return MovieListResult encapsulated inside a RepositoryResponse
      */
-    suspend fun fetchMovieList(): RepositoryResponse<MovieListResult>
+    suspend fun fetchMovieList(): DataResult<MovieListResult>
 
     /**
      * Retrieves from the network the details for the movie with the specified id.
@@ -29,7 +27,7 @@ interface MovieRepository {
      *
      * @return MovieDetails encapsulated inside a RepositoryResponse
      */
-    suspend fun fetchMovieDetails(id: Int): RepositoryResponse<MovieDetails>
+    suspend fun fetchMovieDetails(id: Int): DataResult<MovieDetails>
 }
 
 // Default implementation
@@ -37,31 +35,31 @@ interface MovieRepository {
 class DefaultMovieRepository @Inject constructor(
     val localDataSource: MovieLocalDataSource,
     val remoteDataSource: MovieRemoteDataSource,
-    @IoDispatcher val dispatcher: CoroutineDispatcher
+    val dispatcher: CoroutineDispatcher
 ) : MovieRepository {
 
-    override suspend fun fetchMovieList(): RepositoryResponse<MovieListResult> {
+    override suspend fun fetchMovieList(): DataResult<MovieListResult> {
         return withContext(dispatcher) {
             try {
                 if (!localDataSource.hasMovieListResult()) {
                     val movieResultList = remoteDataSource.fetchMovieList()
                     localDataSource.saveMovieListResult(movieResultList)
                 }
-                RepositoryResponse.Success(localDataSource.getMovieListResult())
+                DataResult.Success(localDataSource.getMovieListResult())
             } catch (e: Exception) {
                 e.printStackTrace()
-                RepositoryResponse.Error(e.localizedMessage, e.cause)
+                DataResult.Error(e.localizedMessage, e.cause)
             }
         }
     }
 
-    override suspend fun fetchMovieDetails(id: Int): RepositoryResponse<MovieDetails> {
+    override suspend fun fetchMovieDetails(id: Int): DataResult<MovieDetails> {
         return withContext(dispatcher) {
             try {
-                RepositoryResponse.Success(remoteDataSource.fetchMovieDetails(id))
+                DataResult.Success(remoteDataSource.fetchMovieDetails(id))
             } catch (e: Exception) {
                 e.printStackTrace()
-                RepositoryResponse.Error(e.localizedMessage, e.cause)
+                DataResult.Error(e.localizedMessage, e.cause)
             }
         }
     }

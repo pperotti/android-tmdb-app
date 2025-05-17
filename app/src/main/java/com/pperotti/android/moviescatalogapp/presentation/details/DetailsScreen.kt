@@ -2,7 +2,6 @@ package com.pperotti.android.moviescatalogapp.presentation.details
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -31,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -57,9 +55,9 @@ import com.pperotti.android.moviescatalogapp.presentation.common.TextWithIconRow
  */
 @Composable
 fun DetailsScreen(
+    modifier: Modifier = Modifier,
     id: Int,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier,
     detailsViewModel: DetailsViewModel = hiltViewModel()
 ) {
     val key: Int by remember { mutableIntStateOf(id) }
@@ -90,8 +88,15 @@ fun DrawScreenContent(
     ) { paddingValues ->
         when (uiState) {
             is DetailsUiState.Loading -> LoadingContent(modifier)
-            is DetailsUiState.Success -> SuccessContent(uiState, paddingValues, modifier)
-            is DetailsUiState.Error -> ErrorContent(uiState.message, modifier)
+            is DetailsUiState.Success -> SuccessContent(
+                uiState,
+                paddingValues,
+                modifier
+            )
+            is DetailsUiState.Error -> ErrorContent(
+                message = uiState.message,
+                modifier = modifier
+            )
         }
     }
 }
@@ -231,16 +236,11 @@ fun DetailsScreenTopAppBar(
             }
         },
         title = {
-            Box(
-                modifier = modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(id = R.string.movie_details_top_bar_title),
-                    modifier = modifier,
-                    fontSize = 20.sp
-                )
-            }
+            Text(
+                text = stringResource(id = R.string.movie_details_top_bar_title),
+                modifier = modifier,
+                fontSize = 20.sp
+            )
         },
         colors = TopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,

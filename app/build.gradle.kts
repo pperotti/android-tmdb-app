@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +7,21 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
+
+// Load local.properties manually
+val localProperties = Properties().apply {
+    val localPropsFile = rootProject.file("local.properties")
+    if (localPropsFile.exists()) {
+        load(localPropsFile.inputStream())
+    }
+}
+
+// Read the property (with fallback if missing)
+val apiBaseUrl: String = localProperties.getProperty("API_BASE_URL")
+    ?: error("API_BASE_URL is not defined in local.properties")
+
+val serviceToken: String = localProperties.getProperty("SERVICE_TOKEN")
+    ?: error("SERVICE_TOKEN is not defined in local.properties")
 
 android {
     namespace = "com.pperotti.android.moviescatalogapp"
@@ -16,6 +33,10 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        // Inject it into BuildConfig
+        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+        buildConfigField("String", "SERVICE_TOKEN", "\"$serviceToken\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -38,6 +59,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

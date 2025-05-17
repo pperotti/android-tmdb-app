@@ -72,7 +72,7 @@ Provide step-by-step instructions on how to set up and run your project.
 
 1. Clone the repository:
    ```sh
-   git clone git@github.com:pperotti/MoviesCatalogApp.git
+   git clone git@github.com:pperotti/android-tmdb-app.git
    ```
 2. Open the project in Android Studio.
 3. Build and run the application on an emulator or connected device.

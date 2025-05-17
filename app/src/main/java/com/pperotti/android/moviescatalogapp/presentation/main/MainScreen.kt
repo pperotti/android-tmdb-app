@@ -47,9 +47,9 @@ import com.pperotti.android.moviescatalogapp.presentation.common.LoadingContent
 
 @Composable
 fun MainScreen(
+    modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = hiltViewModel(),
-    onMovieSelected: (id: Int) -> Unit,
-    modifier: Modifier = Modifier
+    onMovieSelected: (id: Int) -> Unit
 ) {
     // Invoke fetchData when the screen is first displayed
     LaunchedEffect(true) {
@@ -57,10 +57,8 @@ fun MainScreen(
     }
 
     // Collect data from the ViewModel and react to it
-    mainViewModel.uiState.collectAsState().value.let { state ->
-        // Draw the content by the state
-        DrawScreenContent(state, modifier, onMovieSelected)
-    }
+    val state = mainViewModel.uiState.collectAsState().value
+    DrawScreenContent(state, modifier, onMovieSelected)
 }
 
 @Composable
@@ -76,12 +74,15 @@ fun DrawScreenContent(
         when (uiState) {
             is MainUiState.Loading -> LoadingContent(modifier)
             is MainUiState.Success -> MainListContent(
-                uiItems = uiState.items,
                 modifier = modifier.padding(paddingValues),
+                uiItems = uiState.items,
                 onMovieSelected = onMovieSelected
             )
 
-            is MainUiState.Error -> ErrorContent(uiState.message, modifier)
+            is MainUiState.Error -> ErrorContent(
+                modifier = modifier,
+                message = uiState.message
+            )
         }
     }
 }

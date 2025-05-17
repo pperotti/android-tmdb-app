@@ -2,7 +2,7 @@ package com.pperotti.android.moviescatalogapp.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pperotti.android.moviescatalogapp.data.common.RepositoryResponse
+import com.pperotti.android.moviescatalogapp.data.common.DataResult
 import com.pperotti.android.moviescatalogapp.data.movie.MovieListResult
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,10 +33,10 @@ class MainViewModel @Inject constructor(
             _uiState.value = MainUiState.Loading
 
             when (val movieResponse = repository.fetchMovieList()) {
-                is RepositoryResponse.Success ->
+                is DataResult.Success ->
                     transformSuccessResponse(movieResponse.result)
 
-                is RepositoryResponse.Error -> {
+                is DataResult.Error -> {
                     _uiState.value = MainUiState.Error(
                         movieResponse.message
                     )

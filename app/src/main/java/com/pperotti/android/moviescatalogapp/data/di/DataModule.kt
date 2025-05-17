@@ -6,6 +6,7 @@ package com.pperotti.android.moviescatalogapp.data.di
  */
 import android.content.Context
 import androidx.room.Room
+import com.pperotti.android.moviescatalogapp.BuildConfig
 import com.pperotti.android.moviescatalogapp.data.TmdbService
 import com.pperotti.android.moviescatalogapp.data.movie.DefaultMovieLocalDataSource
 import com.pperotti.android.moviescatalogapp.data.movie.DefaultMovieRemoteDataSource
@@ -17,6 +18,7 @@ import com.pperotti.android.moviescatalogapp.data.movie.MovieRemoteDataSource
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
 import com.pperotti.android.moviescatalogapp.data.movie.TmdbApi
 import com.pperotti.android.moviescatalogapp.di.IoDispatcher
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,12 +38,8 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
-    private const val BASE_URL = "https://api.themoviedb.org/3/"
-
-    // WARNING: This value should not be hardcoded due to security concerns. This value should be
-    // received via a config service like remote config or similar
-    private const val TOKEN =
-        "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5YWVmNWZhNTk4YmI0MGJiYWNiZWE3M2U2MzIzYTk3NCIsIm5iZiI6MTU0NzA0MjI4OC40NDQsInN1YiI6IjVjMzVmZGYwYzNhMzY4MjcyNDFiZWIyZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.leIRuvYh31xW3GXpEYgj10lgCfF7Qmrrnmm7z57lN5c"
+    private const val BASE_URL = BuildConfig.API_BASE_URL
+    private const val TOKEN = BuildConfig.SERVICE_TOKEN
 
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
