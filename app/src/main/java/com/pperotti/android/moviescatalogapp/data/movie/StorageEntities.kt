@@ -79,28 +79,8 @@ abstract class MovieDatabase : RoomDatabase() {
     abstract fun movieDao(): MovieDao
 }
 
-fun MovieItem.toStorageMovie(page: Int): StorageMovie {
-    return StorageMovie(
-        id = id,
-        page = page,
-        adult = adult,
-        backdropPath = backdropPath,
-        genreIds = genreIds,
-        originalLanguage = originalLanguage,
-        originalTitle = originalTitle,
-        overview = overview,
-        popularity = popularity,
-        posterPath = posterPath,
-        releaseDate = releaseDate,
-        title = title,
-        video = video,
-        voteAverage = voteAverage,
-        voteCount = voteCount,
-    )
-}
-
-fun StorageMovie.toMovieItem(): MovieItem {
-    return MovieItem(
+fun StorageMovie.toMovieItem(): DataMovieItem {
+    return DataMovieItem(
         adult = adult,
         backdropPath = backdropPath,
         genreIds = genreIds,
@@ -118,18 +98,10 @@ fun StorageMovie.toMovieItem(): MovieItem {
     )
 }
 
-fun StorageMovieListResult.toMovieListResult(storageMovieList: List<StorageMovie>): MovieListResult {
-    return MovieListResult(
+fun StorageMovieListResult.toMovieListResult(storageMovieList: List<StorageMovie>): DataMovieListResult {
+    return DataMovieListResult(
         page = page,
         results = storageMovieList.map { it.toMovieItem() },
-        totalPages = totalPages,
-        totalResults = totalResults
-    )
-}
-
-fun MovieListResult.toStorageMovieListResult(): StorageMovieListResult {
-    return StorageMovieListResult(
-        page = page,
         totalPages = totalPages,
         totalResults = totalResults
     )

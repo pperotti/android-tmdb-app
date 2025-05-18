@@ -1,7 +1,7 @@
 package com.pperotti.android.moviescatalogapp.domain.usecase
 
 import com.pperotti.android.moviescatalogapp.data.common.DataResult
-import com.pperotti.android.moviescatalogapp.data.movie.MovieDetails
+import com.pperotti.android.moviescatalogapp.data.movie.DataMovieDetails
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
 import com.pperotti.android.moviescatalogapp.domain.common.DomainResult
 import javax.inject.Inject
@@ -41,22 +41,22 @@ class DefaultGetMovieDetails @Inject constructor(
         }
     }
 
-    private fun transformSuccessResponse(movieDetails: MovieDetails): DomainResult.Success<DomainMovieDetails> {
+    private fun transformSuccessResponse(dataMovieDetails: DataMovieDetails): DomainResult.Success<DomainMovieDetails> {
         // Publish items tot he UI
         return DomainResult.Success(
             DomainMovieDetails(
-                id = movieDetails.id,
-                imdbId = movieDetails.imdbId,
-                homepage = movieDetails.homepage,
-                overview = movieDetails.overview,
-                posterPath = "https://image.tmdb.org/t/p/w200/${movieDetails.posterPath}",
-                genres = movieDetails.genres?.map { DomainMovieGenre(it.id, it.name) }
+                id = dataMovieDetails.id,
+                imdbId = dataMovieDetails.imdbId,
+                homepage = dataMovieDetails.homepage,
+                overview = dataMovieDetails.overview,
+                posterPath = "https://image.tmdb.org/t/p/w200/${dataMovieDetails.posterPath}",
+                genres = dataMovieDetails.genres?.map { DomainMovieGenre(it.id, it.name) }
                     ?: emptyList(),
-                title = movieDetails.title,
-                revenue = movieDetails.revenue,
-                status = movieDetails.status,
-                voteAverage = movieDetails.voteAverage,
-                voteCount = movieDetails.voteCount,
+                title = dataMovieDetails.title,
+                revenue = dataMovieDetails.revenue,
+                status = dataMovieDetails.status,
+                voteAverage = dataMovieDetails.voteAverage,
+                voteCount = dataMovieDetails.voteCount,
             )
         )
     }

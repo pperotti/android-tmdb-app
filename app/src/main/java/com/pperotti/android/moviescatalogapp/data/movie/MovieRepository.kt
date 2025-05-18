@@ -18,7 +18,7 @@ interface MovieRepository {
      *
      * @return MovieListResult encapsulated inside a RepositoryResponse
      */
-    suspend fun fetchMovieList(): DataResult<MovieListResult>
+    suspend fun fetchMovieList(): DataResult<DataMovieListResult>
 
     /**
      * Retrieves from the network the details for the movie with the specified id.
@@ -27,7 +27,7 @@ interface MovieRepository {
      *
      * @return MovieDetails encapsulated inside a RepositoryResponse
      */
-    suspend fun fetchMovieDetails(id: Int): DataResult<MovieDetails>
+    suspend fun fetchMovieDetails(id: Int): DataResult<DataMovieDetails>
 }
 
 // Default implementation
@@ -38,27 +38,25 @@ class DefaultMovieRepository @Inject constructor(
     val dispatcher: CoroutineDispatcher
 ) : MovieRepository {
 
-    override suspend fun fetchMovieList(): DataResult<MovieListResult> {
+    override suspend fun fetchMovieList(): DataResult<DataMovieListResult> {
         return withContext(dispatcher) {
             try {
                 if (!localDataSource.hasMovieListResult()) {
-                    val movieResultList = remoteDataSource.fetchMovieList()
-                    localDataSource.saveMovieListResult(movieResultList)
+                    val remoteMovieResultList = remoteDataSource.fetchMovieList()
+                    localDataSource.saveMovieListResult(remoteMovieResultList)
                 }
                 DataResult.Success(localDataSource.getMovieListResult())
             } catch (e: Exception) {
-                e.printStackTrace()
                 DataResult.Error(e.localizedMessage, e.cause)
             }
         }
     }
 
-    override suspend fun fetchMovieDetails(id: Int): DataResult<MovieDetails> {
+    override suspend fun fetchMovieDetails(id: Int): DataResult<DataMovieDetails> {
         return withContext(dispatcher) {
             try {
-                DataResult.Success(remoteDataSource.fetchMovieDetails(id))
+                DataResult.Success(remoteDataSource.fetchMovieDetails(id).toDataMovieDetails())
             } catch (e: Exception) {
-                e.printStackTrace()
                 DataResult.Error(e.localizedMessage, e.cause)
             }
         }

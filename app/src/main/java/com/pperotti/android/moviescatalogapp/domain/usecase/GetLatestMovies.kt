@@ -1,7 +1,7 @@
 package com.pperotti.android.moviescatalogapp.domain.usecase
 
 import com.pperotti.android.moviescatalogapp.data.common.DataResult
-import com.pperotti.android.moviescatalogapp.data.movie.MovieListResult
+import com.pperotti.android.moviescatalogapp.data.movie.DataMovieListResult
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
 import com.pperotti.android.moviescatalogapp.domain.common.DomainResult
 import javax.inject.Inject
@@ -38,9 +38,9 @@ class DefaultGetLatestMovies @Inject constructor(
         }
     }
 
-    private fun transformDataResultIntoDomainResult(movieListResult: MovieListResult): DomainResult<DomainMovieListResult> {
+    private fun transformDataResultIntoDomainResult(dataMovieListResult: DataMovieListResult): DomainResult<DomainMovieListResult> {
         val resultList: MutableList<DomainMovieItem> = mutableListOf()
-        movieListResult.results.forEach { movie ->
+        dataMovieListResult.results.forEach { movie ->
             resultList.add(
                 DomainMovieItem(
                     id = movie.id,
@@ -55,10 +55,10 @@ class DefaultGetLatestMovies @Inject constructor(
         // Publish Items to the UI
         return DomainResult.Success(
             DomainMovieListResult(
-                page = movieListResult.page,
+                page = dataMovieListResult.page,
                 results = resultList,
-                totalPages = movieListResult.totalPages,
-                totalResults = movieListResult.totalResults
+                totalPages = dataMovieListResult.totalPages,
+                totalResults = dataMovieListResult.totalResults
             )
         )
     }

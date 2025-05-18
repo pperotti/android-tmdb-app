@@ -12,22 +12,22 @@ interface MovieRemoteDataSource {
      * @param includeVideo Determine whether it includes information about an associated video.
      * @param page The value used by TMDB to determine the list of movies it sends.
      *
-     * @return One page of movies encapsulated within the MovieListResult
+     * @return One page of movies encapsulated within the RemoteMovieListResult
      */
     suspend fun fetchMovieList(
         includeAdult: Boolean = false,
         includeVideo: Boolean = false,
         page: Int = 1
-    ): MovieListResult
+    ): RemoteMovieListResult
 
     /**
      * Retrieve the full details for a movie given an id.
      *
-     * @param The ID for the selected movie.
+     * @param id The ID for the selected movie.
      * @return All the details TMDB has associated with this movie
-     *         encapsulated in MovieDetails class
+     *         encapsulated in RemoteMovieDetails class
      */
-    suspend fun fetchMovieDetails(id: Int): MovieDetails
+    suspend fun fetchMovieDetails(id: Int): RemoteMovieDetails
 }
 
 @Singleton
@@ -39,11 +39,12 @@ class DefaultMovieRemoteDataSource @Inject constructor(
         includeAdult: Boolean,
         includeVideo: Boolean,
         page: Int
-    ): MovieListResult {
+    ): RemoteMovieListResult {
         return tmdbApi.fetchMovieList(includeAdult, includeVideo, page)
     }
 
-    override suspend fun fetchMovieDetails(id: Int): MovieDetails {
+    override suspend fun fetchMovieDetails(id: Int): RemoteMovieDetails {
         return tmdbApi.fetchMovieDetails(id)
     }
 }
+
