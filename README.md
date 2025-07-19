@@ -61,11 +61,29 @@ No Java code should be used in new features in modern application written from s
 ## Screenshots
 Here are some screenshots of the app.
 
-<img src="/documentation/images/TMDB_Logo.png" alt="Logo" style="width:20%;height:20%;">
-<img src="/documentation/images/latest_movies.png" alt="Main Screen showing a list of movies" style="width:20%;height:20%;">
-<img src="/documentation/images/latest_movies_landscape.png" alt="Main Screen showing a list of movies" style="width:20%;height:20%;">
-<img src="/documentation/images/movie_details.png" alt="Screen showing the list of a movie." style="width:20%;height:20%;">
-<img src="/documentation/images/movie_details_landscape.png" alt="Screen showing the list of a movie." style="width:20%;height:20%;">
+<table>
+  <tr>
+    <td colspan="2" style="text-align:center;">
+        <img src="documentation/images/TMDB_Logo.png" alt="Logo" style="width:20%;height:20%">
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">
+      <img src="documentation/images/latest_movies.png" alt="Main Screen showing a list of movies" style="width:50%;height:50%;">
+    </td>    
+    <td>
+      <img src="documentation/images/latest_movies_landscape.png" alt="Main Screen showing a list of movies" style="width:80%;height:80%;">      
+    </td>    
+  </tr>
+  <tr>
+    <td style="text-align:center;">
+      <img src="documentation/images/movie_details.png" alt="Screen showing the list of a movie." style="width:50%;height:50%;">
+    </td>    
+    <td>
+      <img src="documentation/images/movie_details_landscape.png" alt="Screen showing the list of a movie." style="width:80%;height:80%;">    
+    </td>    
+  </tr>
+</table>
 
 ## Getting Started
 
