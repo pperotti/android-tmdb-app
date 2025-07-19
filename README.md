@@ -2,17 +2,21 @@
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [API Key](#api-key)
-- [Features](#features)
-- [Key Technical Decisions](#key-technical-decisions)
-- [Screenshots](#screenshots)
-- [Getting Started](#getting-started)
+- [The MovieDB Android Application (TMDBApp)](#the-moviedb-android-application-tmdbapp)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [API Key](#api-key)
+  - [Features](#features)
+  - [Key Technical Decisions](#key-technical-decisions)
+    - [Libraries](#libraries)
+    - [The project support two scenarios](#the-project-support-two-scenarios)
+  - [Screenshots](#screenshots)
+  - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
-- [Usage](#usage)
-- [License](#license)
-- [Acknowledgments](#acknowledgments)
+  - [Usage](#usage)
+  - [License](#license)
+  - [Acknowledgments](#acknowledgments)
 
 ## Introduction
 
@@ -21,9 +25,11 @@ how a modern application should be structured.
 
 ## API Key
 
-IMPORTANT! The hardcoded API key available in DataModule.kt is expired. Since this is a sample app,
-there is no infrastructure set in place to make this received via a different mechanism. To run 
-the app, this key should be replaced by a valid one. 
+IMPORTANT! In order to make this work, you should the following properties to your local.properties file:
+```text
+API_BASE_URL=https://api.themoviedb.org/3/
+SERVICE_TOKEN=<your TMDB token>
+```
 
 ## Features
 
@@ -35,6 +41,11 @@ The application allows the user:
 
 ## Key Technical Decisions
 
+### Libraries
+The project is written 100% in Kotlin since this is the actual standard. 
+
+No Java code should be used in new features in modern application written from scratch.
+ 
 * Jetpack Compose
 * Kotlin
 * Code organized following latest Google's Architecture Guideline
@@ -42,14 +53,15 @@ The application allows the user:
 * Dependency Injection
 * Storage Support using Room
 
-All the explanation about each of the previous points will be addressed in the following [document](https://docs.google.com/document/d/1e8XEd2p1_ovLGcSCk9dVSUNOnhI3ZvHp36kxN9XKEbQ/edit?usp=sharing)
+### The project support two scenarios
 
-You can find more information in the "PROJECT - The MovieDB App.pdf" file. 
+* List A page of latest movies
+* Get the details of a movie
 
 ## Screenshots
 Here are some screenshots of the app.
 
-![Logo](/documentation/images/TMDB_Logo.png)
+<img src="/documentation/images/TMDB_Logo.png" alt="Logo" style="width:20%;height:20%;">
 ![Main Screen](/documentation/images/latest_movies.png)
 ![Details Screen](/documentation/images/movie_details.png)
 ![Main Screen - Landscape](/documentation/images/latest_movies_landscape.png)
@@ -81,9 +93,9 @@ Provide step-by-step instructions on how to set up and run your project.
 
 All you have to do is selecting the app's icon and wait for the app to load the list of most recent movies available.
 
-Once the list is displayed, you can select an invididual movie to see its details.
+Once the list is displayed, you can select an individual movie to see its details.
 
-All screens support a personalized dispalyed depending on the device's orientation.
+All screens support a personalized displayed depending on the device's orientation.
 
 ## License
 
