@@ -62,10 +62,10 @@ No Java code should be used in new features in modern application written from s
 Here are some screenshots of the app.
 
 <img src="/documentation/images/TMDB_Logo.png" alt="Logo" style="width:20%;height:20%;">
-![Main Screen](/documentation/images/latest_movies.png)
-![Details Screen](/documentation/images/movie_details.png)
-![Main Screen - Landscape](/documentation/images/latest_movies_landscape.png)
-![Details Screen - Landscape](/documentation/images/movie_details_landscape.png)
+<img src="/documentation/images/latest_movies.png" alt="Main Screen showing a list of movies" style="width:20%;height:20%;">
+<img src="/documentation/images/latest_movies_landscape.png" alt="Main Screen showing a list of movies" style="width:20%;height:20%;">
+<img src="/documentation/images/movie_details.png" alt="Screen showing the list of a movie." style="width:20%;height:20%;">
+<img src="/documentation/images/movie_details_landscape.png" alt="Screen showing the list of a movie." style="width:20%;height:20%;">
 
 ## Getting Started
 
