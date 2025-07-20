@@ -3,6 +3,7 @@ package com.pperotti.android.moviescatalogapp.data.movie
 import com.pperotti.android.moviescatalogapp.data.common.DataResult
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,7 +47,7 @@ class DefaultMovieRepository
                         localDataSource.saveMovieListResult(remoteMovieResultList)
                     }
                     DataResult.Success(localDataSource.getMovieListResult())
-                } catch (e: Exception) {
+                } catch (e: IOException) {
                     DataResult.Error(e.localizedMessage, e.cause)
                 }
             }
@@ -56,7 +57,7 @@ class DefaultMovieRepository
             return withContext(dispatcher) {
                 try {
                     DataResult.Success(remoteDataSource.fetchMovieDetails(id).toDataMovieDetails())
-                } catch (e: Exception) {
+                } catch (e: IOException) {
                     DataResult.Error(e.localizedMessage, e.cause)
                 }
             }

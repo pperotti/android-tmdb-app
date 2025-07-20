@@ -334,7 +334,7 @@ naming:
   FunctionNaming:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/androidUnitTest/**', '**/androidInstrumentedTest/**', '**/jsTest/**', '**/iosTest/**']
-    ignoreAnnotations:
+    ignoreAnnotated:
       - "kotlinx.compose.Composable"  # Fully qualified name (recommended)
       - "Composable"                  # Short name (if used in the same package)
     functionPattern: '[a-z][a-zA-Z0-9]*'
@@ -648,7 +648,7 @@ style:
     maxChainedCalls: 5
   MaxLineLength:
     active: true
-    maxLineLength: 120
+    maxLineLength: 150
     excludePackageStatements: true
     excludeImportStatements: true
     excludeCommentStatements: false

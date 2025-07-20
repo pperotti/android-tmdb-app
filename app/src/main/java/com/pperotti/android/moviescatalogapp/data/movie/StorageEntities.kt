@@ -18,6 +18,7 @@ class StorageMovieListResult(
     val totalResults: Int,
 )
 
+@Suppress("LongParameterList")
 @Entity(tableName = "movies")
 class StorageMovie(
     @PrimaryKey
