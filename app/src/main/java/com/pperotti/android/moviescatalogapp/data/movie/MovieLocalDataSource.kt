@@ -36,7 +36,11 @@ class DefaultMovieLocalDataSource
             movieDao.deleteMovieListResult()
             movieDao.deleteAllMovies()
             movieDao.insertMovieListResult(remoteMovieListResult.toStorageMovieListResult())
-            movieDao.insertAll(remoteMovieListResult.results.map { it.toStorageMovieItem(remoteMovieListResult.page) })
+            movieDao.insertAll(
+                remoteMovieListResult.results.map {
+                    it.toStorageMovieItem(remoteMovieListResult.page)
+                },
+            )
         }
 
         override suspend fun hasMovieListResult(): Boolean {

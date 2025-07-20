@@ -245,7 +245,10 @@ fun DetailsScreenTopAppBar(
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.top_bar_back_button_description),
+                    contentDescription =
+                        stringResource(
+                            id = R.string.top_bar_back_button_description,
+                        ),
                 )
             }
         },

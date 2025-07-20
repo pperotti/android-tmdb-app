@@ -1,0 +1,9 @@
+# See issue with Composable functions in Kotlin files: https://pinterest.github.io/ktlint/1.5.0/rules/standard/#function-naming
+
+root = true
+
+[*.{kt,kts}]
+ktlint_code_style = ktlint_official
+ktlint_function_naming_ignore_when_annotated_with=Composable
+
+ij_kotlin_packages_to_use_import_on_demand = false
