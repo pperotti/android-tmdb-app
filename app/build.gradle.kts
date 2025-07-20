@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
 }
 
 // Load local.properties manually
@@ -76,6 +77,13 @@ ktlint {
     }
 }
 
+detekt {
+    toolVersion = "1.23.8"
+    config.setFrom(file("../config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    parallel = true
+}
+
 dependencies {
 
     // Out-Of-The-Box libraries
@@ -126,4 +134,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Detekt Plugin
+    // detektPlugins(libs.detekt.formatting)
 }

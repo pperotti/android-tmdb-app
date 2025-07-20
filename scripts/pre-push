@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# This file should be placed under .git/hooks
+# after that, make sure you make the file executable: chmod +x .git/hooks/pre-push
+
+echo "Checking code with Ktlint"
+
+./gradlew ktlintCheck --daemon
+
+# Run tests
+if [ $? -ne 0 ]; then
+    echo "❌ Ktlint failed. Push aborted."
+    exit 1
+fi
+
+echo "✅ Ktlint passed. Proceeding with push."
+exit 0
