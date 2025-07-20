@@ -136,5 +136,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Detekt Plugin
-    //detektPlugins(libs.detekt.formatting)
+    // detektPlugins(libs.detekt.formatting)
 }

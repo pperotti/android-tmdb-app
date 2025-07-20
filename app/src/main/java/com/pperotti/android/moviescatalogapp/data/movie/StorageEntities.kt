@@ -18,7 +18,6 @@ class StorageMovieListResult(
     val totalResults: Int,
 )
 
-
 @Entity(tableName = "movies")
 class StorageMovie(
     @PrimaryKey
