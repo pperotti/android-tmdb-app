@@ -111,6 +111,7 @@ fun MainListContent(
     }
 }
 
+@Suppress("MagicNumber")
 @Composable
 fun CardItemComposable(
     item: MainListItemUiState,
