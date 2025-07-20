@@ -25,11 +25,14 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
+      # https://github.com/actions/setup-java?tab=readme-ov-file#supported-distributions
       - name: Setup Java JDK
         uses: actions/setup-java@v3.14.1
         with:
           # The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file
           java-version: 11
+          distribution: 'oracle'
+          architecture: x64
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
