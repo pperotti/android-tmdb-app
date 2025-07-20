@@ -5,7 +5,9 @@ package com.pperotti.android.moviescatalogapp.presentation.main
  */
 sealed class MainUiState {
     data object Loading : MainUiState()
+
     data class Success(val items: List<MainListItemUiState>) : MainUiState()
+
     data class Error(val message: String?) : MainUiState()
 }
 
@@ -17,5 +19,5 @@ data class MainListItemUiState(
     val title: String?,
     val overview: String?,
     val popularity: Float?,
-    val posterPath: String?
+    val posterPath: String?,
 )

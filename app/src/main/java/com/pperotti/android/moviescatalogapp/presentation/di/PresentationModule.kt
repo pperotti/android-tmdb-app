@@ -16,7 +16,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 class PresentationModule {
-
     @Provides
     fun provideMainViewModel(getLatestMovies: GetLatestMovies): MainViewModel {
         return MainViewModel(getLatestMovies)

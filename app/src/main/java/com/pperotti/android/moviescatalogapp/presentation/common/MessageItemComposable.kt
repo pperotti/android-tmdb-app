@@ -17,33 +17,37 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun MessageItemComposable(
     @StringRes textRes: Int,
-    textValue: String = ""
+    textValue: String = "",
 ) {
     val title = LocalContext.current.getString(textRes)
-    val annotatedString = buildAnnotatedString {
-        withStyle(
-            style = MaterialTheme
-                .typography
-                .bodyMedium
-                .toSpanStyle()
-                .copy(fontWeight = FontWeight.Bold, fontSize = 18.sp)
-        ) {
-            append(title)
+    val annotatedString =
+        buildAnnotatedString {
+            withStyle(
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodyMedium
+                        .toSpanStyle()
+                        .copy(fontWeight = FontWeight.Bold, fontSize = 18.sp),
+            ) {
+                append(title)
+            }
+            withStyle(
+                style =
+                    MaterialTheme
+                        .typography
+                        .bodyMedium
+                        .toSpanStyle()
+                        .copy(fontWeight = FontWeight.Normal, fontSize = 18.sp),
+            ) {
+                append(textValue)
+            }
         }
-        withStyle(
-            style = MaterialTheme
-                .typography
-                .bodyMedium
-                .toSpanStyle()
-                .copy(fontWeight = FontWeight.Normal, fontSize = 18.sp)
-        ) {
-            append(textValue)
-        }
-    }
     Text(
         text = annotatedString,
         fontSize = 10.sp,
-        modifier = Modifier
-            .padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp))
+        modifier =
+            Modifier
+                .padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp)),
     )
 }

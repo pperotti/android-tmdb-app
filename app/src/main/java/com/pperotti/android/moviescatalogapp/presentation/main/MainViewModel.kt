@@ -13,53 +13,55 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
-    val getLatestMovies: GetLatestMovies
-) : ViewModel() {
+class MainViewModel
+    @Inject
+    constructor(
+        val getLatestMovies: GetLatestMovies,
+    ) : ViewModel() {
+        // A Job is required so you can cancel a running coroutine
+        private var fetchJob: Job? = null
 
-    // A Job is required so you can cancel a running coroutine
-    private var fetchJob: Job? = null
+        // StateFlow to hold the UI state
+        private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
+        val uiState: StateFlow<MainUiState> get() = _uiState
 
-    // StateFlow to hold the UI state
-    private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
-    val uiState: StateFlow<MainUiState> get() = _uiState
+        // Request items from repository and convert them to UI items
+        fun requestData() {
+            fetchJob?.cancel()
+            fetchJob =
+                viewModelScope.launch {
+                    // Indicates the UI that loading should be presented
+                    _uiState.value = MainUiState.Loading
 
-    // Request items from repository and convert them to UI items
-    fun requestData() {
-        fetchJob?.cancel()
-        fetchJob = viewModelScope.launch {
+                    when (val domainResponse = getLatestMovies.getLatestMovies()) {
+                        is DomainResult.Success ->
+                            transformDomainResultIntoUiResult(domainResponse.result)
 
-            // Indicates the UI that loading should be presented
-            _uiState.value = MainUiState.Loading
-
-            when (val domainResponse = getLatestMovies.getLatestMovies()) {
-                is DomainResult.Success ->
-                    transformDomainResultIntoUiResult(domainResponse.result)
-
-                is DomainResult.Error -> {
-                    _uiState.value = MainUiState.Error(
-                        domainResponse.message
-                    )
+                        is DomainResult.Error -> {
+                            _uiState.value =
+                                MainUiState.Error(
+                                    domainResponse.message,
+                                )
+                        }
+                    }
                 }
-            }
         }
-    }
 
-    private fun transformDomainResultIntoUiResult(domainMovieListResult: DomainMovieListResult) {
-        val resultList: MutableList<MainListItemUiState> = mutableListOf()
-        domainMovieListResult.results.forEach { movie ->
-            resultList.add(
-                MainListItemUiState(
-                    id = movie.id,
-                    title = movie.title,
-                    overview = movie.overview,
-                    popularity = movie.popularity,
-                    posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}"
+        private fun transformDomainResultIntoUiResult(domainMovieListResult: DomainMovieListResult) {
+            val resultList: MutableList<MainListItemUiState> = mutableListOf()
+            domainMovieListResult.results.forEach { movie ->
+                resultList.add(
+                    MainListItemUiState(
+                        id = movie.id,
+                        title = movie.title,
+                        overview = movie.overview,
+                        popularity = movie.popularity,
+                        posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}",
+                    ),
                 )
-            )
-        }
+            }
 
-        // Publish Items to the UI
-        _uiState.value = MainUiState.Success(items = resultList)
+            // Publish Items to the UI
+            _uiState.value = MainUiState.Success(items = resultList)
+        }
     }
-}

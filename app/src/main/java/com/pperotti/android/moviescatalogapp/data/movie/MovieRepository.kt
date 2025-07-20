@@ -11,7 +11,6 @@ import javax.inject.Singleton
  * the listing of movies along with the details of each movie
  */
 interface MovieRepository {
-
     /**
      * Request the repository to retrieve information about movies from
      * the network or local storage.
@@ -32,33 +31,34 @@ interface MovieRepository {
 
 // Default implementation
 @Singleton
-class DefaultMovieRepository @Inject constructor(
-    val localDataSource: MovieLocalDataSource,
-    val remoteDataSource: MovieRemoteDataSource,
-    val dispatcher: CoroutineDispatcher
-) : MovieRepository {
-
-    override suspend fun fetchMovieList(): DataResult<DataMovieListResult> {
-        return withContext(dispatcher) {
-            try {
-                if (!localDataSource.hasMovieListResult()) {
-                    val remoteMovieResultList = remoteDataSource.fetchMovieList()
-                    localDataSource.saveMovieListResult(remoteMovieResultList)
+class DefaultMovieRepository
+    @Inject
+    constructor(
+        val localDataSource: MovieLocalDataSource,
+        val remoteDataSource: MovieRemoteDataSource,
+        val dispatcher: CoroutineDispatcher,
+    ) : MovieRepository {
+        override suspend fun fetchMovieList(): DataResult<DataMovieListResult> {
+            return withContext(dispatcher) {
+                try {
+                    if (!localDataSource.hasMovieListResult()) {
+                        val remoteMovieResultList = remoteDataSource.fetchMovieList()
+                        localDataSource.saveMovieListResult(remoteMovieResultList)
+                    }
+                    DataResult.Success(localDataSource.getMovieListResult())
+                } catch (e: Exception) {
+                    DataResult.Error(e.localizedMessage, e.cause)
                 }
-                DataResult.Success(localDataSource.getMovieListResult())
-            } catch (e: Exception) {
-                DataResult.Error(e.localizedMessage, e.cause)
             }
         }
-    }
 
-    override suspend fun fetchMovieDetails(id: Int): DataResult<DataMovieDetails> {
-        return withContext(dispatcher) {
-            try {
-                DataResult.Success(remoteDataSource.fetchMovieDetails(id).toDataMovieDetails())
-            } catch (e: Exception) {
-                DataResult.Error(e.localizedMessage, e.cause)
+        override suspend fun fetchMovieDetails(id: Int): DataResult<DataMovieDetails> {
+            return withContext(dispatcher) {
+                try {
+                    DataResult.Success(remoteDataSource.fetchMovieDetails(id).toDataMovieDetails())
+                } catch (e: Exception) {
+                    DataResult.Error(e.localizedMessage, e.cause)
+                }
             }
         }
     }
-}

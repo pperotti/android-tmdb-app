@@ -6,7 +6,6 @@ package com.pperotti.android.moviescatalogapp.data.common
  * @property T The type of the data offered by this layer.
  */
 sealed class DataResult<T> {
-
     /**
      * The data created as a consequence a successfully executing an
      * operation in the data layer.

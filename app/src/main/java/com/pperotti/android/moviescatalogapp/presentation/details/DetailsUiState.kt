@@ -3,7 +3,9 @@ package com.pperotti.android.moviescatalogapp.presentation.details
 // State used for the UI drawing the details
 sealed class DetailsUiState() {
     object Loading : DetailsUiState()
+
     data class Success(val details: DetailsUiData) : DetailsUiState()
+
     data class Error(val message: String?) : DetailsUiState()
 }
 
@@ -19,11 +21,11 @@ data class DetailsUiData(
     val revenue: Long,
     val status: String?,
     val voteAverage: Float?,
-    val voteCount: Int
+    val voteCount: Int,
 )
 
 // Data Container for genre used by the UI
 data class DetailsUiGenre(
     val id: Int,
-    val name: String?
+    val name: String?,
 )

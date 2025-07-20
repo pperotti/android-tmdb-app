@@ -58,7 +58,7 @@ fun DetailsScreen(
     modifier: Modifier = Modifier,
     id: Int,
     onBack: () -> Unit,
-    detailsViewModel: DetailsViewModel = hiltViewModel()
+    detailsViewModel: DetailsViewModel = hiltViewModel(),
 ) {
     val key: Int by remember { mutableIntStateOf(id) }
     LaunchedEffect(key) {
@@ -75,28 +75,30 @@ fun DetailsScreen(
 fun DrawScreenContent(
     uiState: DetailsUiState,
     modifier: Modifier,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
             DetailsScreenTopAppBar(
                 onBack = onBack,
-                modifier = modifier
+                modifier = modifier,
             )
-        }
+        },
     ) { paddingValues ->
         when (uiState) {
             is DetailsUiState.Loading -> LoadingContent(modifier)
-            is DetailsUiState.Success -> SuccessContent(
-                uiState,
-                paddingValues,
-                modifier
-            )
-            is DetailsUiState.Error -> ErrorContent(
-                message = uiState.message,
-                modifier = modifier
-            )
+            is DetailsUiState.Success ->
+                SuccessContent(
+                    uiState,
+                    paddingValues,
+                    modifier,
+                )
+            is DetailsUiState.Error ->
+                ErrorContent(
+                    message = uiState.message,
+                    modifier = modifier,
+                )
         }
     }
 }
@@ -105,7 +107,7 @@ fun DrawScreenContent(
 fun SuccessContent(
     uiState: DetailsUiState.Success,
     paddingValues: PaddingValues,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     // Draw Content Depending on the Orientation
     val configuration = LocalConfiguration.current
@@ -120,28 +122,32 @@ fun SuccessContent(
 fun LandscapeSuccessContent(
     uiState: DetailsUiState.Success,
     paddingValues: PaddingValues,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(paddingValues = paddingValues)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(paddingValues = paddingValues),
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(uiState.details.posterPath)
-                .crossfade(true)
-                .build(),
+            model =
+                ImageRequest.Builder(LocalContext.current)
+                    .data(uiState.details.posterPath)
+                    .crossfade(true)
+                    .build(),
             contentDescription = stringResource(id = R.string.top_bar_back_button_description),
             contentScale = ContentScale.FillHeight,
-            modifier = modifier
-                .fillMaxWidth(fraction = 0.3f)
-                .fillMaxHeight()
+            modifier =
+                modifier
+                    .fillMaxWidth(fraction = 0.3f)
+                    .fillMaxHeight(),
         )
         Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
         ) {
             DrawDetailsContent(uiState, modifier)
         }
@@ -152,31 +158,37 @@ fun LandscapeSuccessContent(
 fun PortraitSuccessContent(
     uiState: DetailsUiState.Success,
     paddingValues: PaddingValues,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(paddingValues = paddingValues)
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(paddingValues = paddingValues),
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(uiState.details.posterPath)
-                .crossfade(true)
-                .build(),
+            model =
+                ImageRequest.Builder(LocalContext.current)
+                    .data(uiState.details.posterPath)
+                    .crossfade(true)
+                    .build(),
             contentDescription = stringResource(id = R.string.top_bar_back_button_description),
             contentScale = ContentScale.FillHeight,
-            modifier = modifier
-                .fillMaxWidth()
-                .height(300.dp)
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
         )
         DrawDetailsContent(uiState, modifier)
     }
 }
 
 @Composable
-fun DrawDetailsContent(uiState: DetailsUiState.Success, modifier: Modifier) {
+fun DrawDetailsContent(
+    uiState: DetailsUiState.Success,
+    modifier: Modifier,
+) {
     Row(modifier = modifier.fillMaxWidth()) {
         Text(
             text = uiState.details.title ?: "-",
@@ -184,18 +196,20 @@ fun DrawDetailsContent(uiState: DetailsUiState.Success, modifier: Modifier) {
             fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(PaddingValues(horizontal = 8.dp, vertical = 16.dp))
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(PaddingValues(horizontal = 8.dp, vertical = 16.dp)),
         )
     }
     Spacer(
-        modifier = Modifier
-            .padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp))
-            .background(color = MaterialTheme.colorScheme.primary)
-            .fillMaxWidth()
-            .height(2.dp)
+        modifier =
+            Modifier
+                .padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp))
+                .background(color = MaterialTheme.colorScheme.primary)
+                .fillMaxWidth()
+                .height(2.dp),
     )
     MessageItemComposable(R.string.details_imdb_id, uiState.details.imdbId ?: "-")
     MessageItemComposable(R.string.details_homepage, uiState.details.homepage ?: "-")
@@ -205,11 +219,12 @@ fun DrawDetailsContent(uiState: DetailsUiState.Success, modifier: Modifier) {
     MessageItemComposable(R.string.details_vote_average, uiState.details.voteAverage.toString())
     MessageItemComposable(R.string.details_vote_count, uiState.details.voteCount.toString())
     Spacer(
-        modifier = Modifier
-            .padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp))
-            .background(color = MaterialTheme.colorScheme.secondary)
-            .fillMaxWidth()
-            .height(1.dp)
+        modifier =
+            Modifier
+                .padding(PaddingValues(horizontal = 8.dp, vertical = 4.dp))
+                .background(color = MaterialTheme.colorScheme.secondary)
+                .fillMaxWidth()
+                .height(1.dp),
     )
     MessageItemComposable(R.string.details_genres, "")
     uiState.details.genres.forEach {
@@ -217,21 +232,20 @@ fun DrawDetailsContent(uiState: DetailsUiState.Success, modifier: Modifier) {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreenTopAppBar(
     onBack: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     TopAppBar(
         navigationIcon = {
             IconButton(
-                onClick = onBack
+                onClick = onBack,
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(id = R.string.top_bar_back_button_description)
+                    contentDescription = stringResource(id = R.string.top_bar_back_button_description),
                 )
             }
         },
@@ -239,16 +253,17 @@ fun DetailsScreenTopAppBar(
             Text(
                 text = stringResource(id = R.string.movie_details_top_bar_title),
                 modifier = modifier,
-                fontSize = 20.sp
+                fontSize = 20.sp,
             )
         },
-        colors = TopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            scrolledContainerColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        modifier = modifier.fillMaxWidth()
+        colors =
+            TopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                scrolledContainerColor = MaterialTheme.colorScheme.onPrimary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+        modifier = modifier.fillMaxWidth(),
     )
 }

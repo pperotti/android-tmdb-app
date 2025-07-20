@@ -6,16 +6,17 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TmdbApi {
-
     @GET("discover/movie?language=en-US&sort_by=popularity")
     suspend fun fetchMovieList(
         @Query("include_adult") adult: Boolean,
         @Query("include_video") video: Boolean,
-        @Query("page") page: Int
+        @Query("page") page: Int,
     ): RemoteMovieListResult
 
     @GET("movie/{id}")
-    suspend fun fetchMovieDetails(@Path("id") id: Int): RemoteMovieDetails
+    suspend fun fetchMovieDetails(
+        @Path("id") id: Int,
+    ): RemoteMovieDetails
 }
 
 /**
@@ -57,7 +58,7 @@ data class RemoteMovieListResult(
     val page: Int,
     val results: List<RemoteMovieItem>,
     @SerializedName("total_pages") val totalPages: Int,
-    @SerializedName("total_results") val totalResults: Int
+    @SerializedName("total_results") val totalResults: Int,
 )
 
 /**
@@ -99,7 +100,7 @@ data class RemoteMovieItem(
     val title: String?,
     val video: Boolean?,
     @SerializedName("vote_average") val voteAverage: Float?,
-    @SerializedName("vote_count") val voteCount: Int?
+    @SerializedName("vote_count") val voteCount: Int?,
 )
 
 /**
@@ -197,44 +198,44 @@ data class RemoteMovieDetails(
     val title: String?,
     val video: Boolean,
     @SerializedName("vote_average") val voteAverage: Float,
-    @SerializedName("vote_count") val voteCount: Int
+    @SerializedName("vote_count") val voteCount: Int,
 )
 
 data class RemoteMovieCollection(
     val id: Int,
     val name: String?,
     @SerializedName("poster_path") val posterPath: String?,
-    @SerializedName("backdrop_path") val backdropPath: String?
+    @SerializedName("backdrop_path") val backdropPath: String?,
 )
 
 data class RemoteMovieGenre(
     val id: Int,
-    val name: String?
+    val name: String?,
 )
 
 data class RemoteProductionCompany(
     val id: Int,
     @SerializedName("logo_path") val logoPath: String?,
     val name: String?,
-    @SerializedName("origin_country") val originCountry: String?
+    @SerializedName("origin_country") val originCountry: String?,
 )
 
 data class RemoteProductionCountry(
     @SerializedName("iso?3166_1") val iso31661: String?,
-    val name: String?
+    val name: String?,
 )
 
 data class RemoteSpokenLanguage(
     @SerializedName("english_name") val englishName: String?,
     @SerializedName("iso_639_1") val iso6391: String?,
-    val name: String?
+    val name: String?,
 )
 
 fun RemoteMovieListResult.toStorageMovieListResult(): StorageMovieListResult {
     return StorageMovieListResult(
         page = this.page,
         totalPages = this.totalPages,
-        totalResults = this.totalResults
+        totalResults = this.totalResults,
     )
 }
 
@@ -254,7 +255,7 @@ fun RemoteMovieItem.toStorageMovieItem(page: Int = 0): StorageMovie {
         video = this.video,
         voteAverage = this.voteAverage,
         voteCount = this.voteCount,
-        page = page
+        page = page,
     )
 }
 
@@ -263,14 +264,14 @@ fun RemoteMovieCollection.toDataMovieCollection(): DataMovieCollection {
         id = this.id,
         name = this.name,
         posterPath = this.posterPath,
-        backdropPath = this.backdropPath
+        backdropPath = this.backdropPath,
     )
 }
 
 fun RemoteMovieGenre.toDataMovieGenre(): DataMovieGenre {
     return DataMovieGenre(
         id = this.id,
-        name = this.name
+        name = this.name,
     )
 }
 
@@ -279,14 +280,14 @@ fun RemoteProductionCompany.toDataProductionCompany(): DataProductionCompany {
         id = this.id,
         logoPath = this.logoPath,
         name = this.name,
-        originCountry = this.originCountry
+        originCountry = this.originCountry,
     )
 }
 
 fun RemoteProductionCountry.toDataProductionCountry(): DataProductionCountry {
     return DataProductionCountry(
         iso31661 = this.iso31661,
-        name = this.name
+        name = this.name,
     )
 }
 
@@ -294,7 +295,7 @@ fun RemoteSpokenLanguage.toDataSpokenLanguage(): DataSpokenLanguage {
     return DataSpokenLanguage(
         englishName = this.englishName,
         iso6391 = this.iso6391,
-        name = this.name
+        name = this.name,
     )
 }
 
@@ -325,6 +326,6 @@ fun RemoteMovieDetails.toDataMovieDetails(): DataMovieDetails {
         title = this.title,
         video = this.video,
         voteAverage = this.voteAverage,
-        voteCount = this.voteCount
+        voteCount = this.voteCount,
     )
 }

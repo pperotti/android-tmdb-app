@@ -10,23 +10,22 @@ import com.pperotti.android.moviescatalogapp.presentation.main.MainScreen
 
 @Composable
 fun SetupNavigation() {
-
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = "home_screen"
+        startDestination = "home_screen",
     ) {
         composable(route = "home_screen") {
             MainScreen(
                 onMovieSelected = { id ->
                     navController.navigate("details_screen/?id=$id")
-                }
+                },
             )
         }
         composable(
             route = "details_screen/?id={id}",
-            arguments = listOf(navArgument("id") { defaultValue = -1 })
+            arguments = listOf(navArgument("id") { defaultValue = -1 }),
         ) {
             val id = it.arguments?.getInt("id")
             requireNotNull(id)
@@ -34,7 +33,7 @@ fun SetupNavigation() {
                 id = id,
                 onBack = {
                     navController.popBackStack()
-                }
+                },
             )
         }
     }

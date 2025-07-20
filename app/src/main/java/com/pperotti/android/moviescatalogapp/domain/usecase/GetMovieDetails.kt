@@ -10,7 +10,6 @@ import javax.inject.Inject
  * Methods required to retrieve
  */
 interface GetMovieDetails {
-
     /**
      * Retrieve the movie details from the repository
      * associated with this use case for the ID required
@@ -23,44 +22,46 @@ interface GetMovieDetails {
 /**
  * Default implementation for GetMovieDetails interface
  */
-class DefaultGetMovieDetails @Inject constructor(
-    val repository: MovieRepository
-) : GetMovieDetails {
+class DefaultGetMovieDetails
+    @Inject
+    constructor(
+        val repository: MovieRepository,
+    ) : GetMovieDetails {
+        override suspend fun getMovieDetails(id: Int): DomainResult<DomainMovieDetails> {
+            return when (val dataDetailsResponse = repository.fetchMovieDetails(id)) {
+                is DataResult.Success ->
+                    transformSuccessResponse(dataDetailsResponse.result)
 
-    override suspend fun getMovieDetails(id: Int): DomainResult<DomainMovieDetails> {
-        return when (val dataDetailsResponse = repository.fetchMovieDetails(id)) {
-            is DataResult.Success ->
-                transformSuccessResponse(dataDetailsResponse.result)
-
-            is DataResult.Error -> {
-                DomainResult.Error(
-                    message = dataDetailsResponse.message,
-                    cause = dataDetailsResponse.cause
-                )
+                is DataResult.Error -> {
+                    DomainResult.Error(
+                        message = dataDetailsResponse.message,
+                        cause = dataDetailsResponse.cause,
+                    )
+                }
             }
         }
-    }
 
-    private fun transformSuccessResponse(dataMovieDetails: DataMovieDetails): DomainResult.Success<DomainMovieDetails> {
-        // Publish items tot he UI
-        return DomainResult.Success(
-            DomainMovieDetails(
-                id = dataMovieDetails.id,
-                imdbId = dataMovieDetails.imdbId,
-                homepage = dataMovieDetails.homepage,
-                overview = dataMovieDetails.overview,
-                posterPath = "https://image.tmdb.org/t/p/w200/${dataMovieDetails.posterPath}",
-                genres = dataMovieDetails.genres?.map { DomainMovieGenre(it.id, it.name) }
-                    ?: emptyList(),
-                title = dataMovieDetails.title,
-                revenue = dataMovieDetails.revenue,
-                status = dataMovieDetails.status,
-                voteAverage = dataMovieDetails.voteAverage,
-                voteCount = dataMovieDetails.voteCount,
+        private fun transformSuccessResponse(dataMovieDetails: DataMovieDetails): DomainResult.Success<DomainMovieDetails> {
+            // Publish items tot he UI
+            return DomainResult.Success(
+                DomainMovieDetails(
+                    id = dataMovieDetails.id,
+                    imdbId = dataMovieDetails.imdbId,
+                    homepage = dataMovieDetails.homepage,
+                    overview = dataMovieDetails.overview,
+                    posterPath = "https://image.tmdb.org/t/p/w200/${dataMovieDetails.posterPath}",
+                    genres =
+                        dataMovieDetails.genres?.map { DomainMovieGenre(it.id, it.name) }
+                            ?: emptyList(),
+                    title = dataMovieDetails.title,
+                    revenue = dataMovieDetails.revenue,
+                    status = dataMovieDetails.status,
+                    voteAverage = dataMovieDetails.voteAverage,
+                    voteCount = dataMovieDetails.voteCount,
+                ),
             )
-        )
+        }
     }
-}
 
 /**
  * Container for the details of the movie
@@ -76,7 +77,7 @@ data class DomainMovieDetails(
     val revenue: Long,
     val status: String?,
     val voteAverage: Float?,
-    val voteCount: Int
+    val voteCount: Int,
 )
 
 /**
@@ -84,6 +85,5 @@ data class DomainMovieDetails(
  */
 data class DomainMovieGenre(
     val id: Int,
-    val name: String?
+    val name: String?,
 )
-

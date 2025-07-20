@@ -16,19 +16,23 @@ import androidx.compose.ui.unit.sp
 import com.pperotti.android.moviescatalogapp.R
 
 @Composable
-fun ErrorContent(modifier: Modifier, message: String?) {
+fun ErrorContent(
+    modifier: Modifier,
+    message: String?,
+) {
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(16.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = message ?: stringResource(R.string.error_no_description),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 14.sp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }

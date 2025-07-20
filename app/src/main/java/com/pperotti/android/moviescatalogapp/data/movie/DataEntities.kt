@@ -4,7 +4,7 @@ data class DataMovieListResult(
     val page: Int,
     val results: List<DataMovieItem>,
     val totalPages: Int,
-    val totalResults: Int
+    val totalResults: Int,
 )
 
 data class DataMovieItem(
@@ -21,37 +21,37 @@ data class DataMovieItem(
     val title: String?,
     val video: Boolean?,
     val voteAverage: Float?,
-    val voteCount: Int?
+    val voteCount: Int?,
 )
 
 data class DataMovieCollection(
     val id: Int,
     val name: String?,
     val posterPath: String?,
-    val backdropPath: String?
+    val backdropPath: String?,
 )
 
 data class DataMovieGenre(
     val id: Int,
-    val name: String?
+    val name: String?,
 )
 
 data class DataProductionCompany(
     val id: Int,
     val logoPath: String?,
     val name: String?,
-    val originCountry: String?
+    val originCountry: String?,
 )
 
 data class DataProductionCountry(
     val iso31661: String?,
-    val name: String?
+    val name: String?,
 )
 
 data class DataSpokenLanguage(
     val englishName: String?,
     val iso6391: String?,
-    val name: String?
+    val name: String?,
 )
 
 data class DataMovieDetails(
@@ -80,5 +80,5 @@ data class DataMovieDetails(
     val title: String?,
     val video: Boolean,
     val voteAverage: Float,
-    val voteCount: Int
+    val voteCount: Int,
 )

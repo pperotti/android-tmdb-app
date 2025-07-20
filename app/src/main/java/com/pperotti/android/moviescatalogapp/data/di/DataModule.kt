@@ -18,7 +18,6 @@ import com.pperotti.android.moviescatalogapp.data.movie.MovieRemoteDataSource
 import com.pperotti.android.moviescatalogapp.data.movie.MovieRepository
 import com.pperotti.android.moviescatalogapp.data.movie.TmdbApi
 import com.pperotti.android.moviescatalogapp.di.IoDispatcher
-
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,7 +57,7 @@ object ApiModule {
     @Provides
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor,
-        httpLoggingInterceptor: HttpLoggingInterceptor
+        httpLoggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
@@ -86,9 +85,10 @@ class AuthInterceptor(val token: String) : Interceptor {
         val originalRequest: Request = chain.request()
 
         // Add authentication headers
-        val authenticatedRequest: Request = originalRequest.newBuilder()
-            .header("Authorization", "Bearer $token")
-            .build()
+        val authenticatedRequest: Request =
+            originalRequest.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
 
         return chain.proceed(authenticatedRequest)
     }
@@ -97,14 +97,15 @@ class AuthInterceptor(val token: String) : Interceptor {
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-
     @Provides
     @Singleton
-    fun provideMovieDatabase(@ApplicationContext context: Context): MovieDatabase {
+    fun provideMovieDatabase(
+        @ApplicationContext context: Context,
+    ): MovieDatabase {
         return Room.databaseBuilder(
             context,
             MovieDatabase::class.java,
-            "movies_database"
+            "movies_database",
         ).build()
     }
 
@@ -131,12 +132,12 @@ object DataModule {
     fun provideMovieRepository(
         localDataSource: MovieLocalDataSource,
         remoteDataSource: MovieRemoteDataSource,
-        @IoDispatcher dispatcher: CoroutineDispatcher
+        @IoDispatcher dispatcher: CoroutineDispatcher,
     ): MovieRepository {
         return DefaultMovieRepository(
             localDataSource,
             remoteDataSource,
-            dispatcher
+            dispatcher,
         )
     }
 }

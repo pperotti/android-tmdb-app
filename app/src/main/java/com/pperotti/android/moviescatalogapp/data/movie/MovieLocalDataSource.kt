@@ -21,25 +21,25 @@ interface MovieLocalDataSource {
 }
 
 @Singleton
-class DefaultMovieLocalDataSource @Inject constructor(
-    val movieDao: MovieDao
-) : MovieLocalDataSource {
+class DefaultMovieLocalDataSource
+    @Inject
+    constructor(
+        val movieDao: MovieDao,
+    ) : MovieLocalDataSource {
+        override suspend fun getMovieListResult(): DataMovieListResult {
+            val storageMovieListResult = movieDao.getMovieListResult()
+            val movies = movieDao.getAllMovies()
+            return storageMovieListResult.toMovieListResult(movies)
+        }
 
-    override suspend fun getMovieListResult(): DataMovieListResult {
-        val storageMovieListResult = movieDao.getMovieListResult()
-        val movies = movieDao.getAllMovies()
-        return storageMovieListResult.toMovieListResult(movies)
+        override suspend fun saveMovieListResult(remoteMovieListResult: RemoteMovieListResult) {
+            movieDao.deleteMovieListResult()
+            movieDao.deleteAllMovies()
+            movieDao.insertMovieListResult(remoteMovieListResult.toStorageMovieListResult())
+            movieDao.insertAll(remoteMovieListResult.results.map { it.toStorageMovieItem(remoteMovieListResult.page) })
+        }
+
+        override suspend fun hasMovieListResult(): Boolean {
+            return movieDao.hasMovieListResult() > 0
+        }
     }
-
-    override suspend fun saveMovieListResult(remoteMovieListResult: RemoteMovieListResult) {
-        movieDao.deleteMovieListResult()
-        movieDao.deleteAllMovies()
-        movieDao.insertMovieListResult(remoteMovieListResult.toStorageMovieListResult())
-        movieDao.insertAll(remoteMovieListResult.results.map { it.toStorageMovieItem(remoteMovieListResult.page) })
-    }
-
-    override suspend fun hasMovieListResult(): Boolean {
-        return movieDao.hasMovieListResult() > 0
-    }
-
-}

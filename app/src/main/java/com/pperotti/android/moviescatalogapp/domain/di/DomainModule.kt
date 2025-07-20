@@ -14,7 +14,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DomainModule {
-
     @Provides
     @Singleton
     fun provideGetLatestMovies(movieRepository: MovieRepository): GetLatestMovies {
@@ -26,5 +25,4 @@ class DomainModule {
     fun provideGetMovieDetails(movieRepository: MovieRepository): GetMovieDetails {
         return DefaultGetMovieDetails(movieRepository)
     }
-
 }

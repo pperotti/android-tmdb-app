@@ -19,26 +19,28 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TextWithIconRowComposable(text: String) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            ),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp,
+                ),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = text,
-            modifier = Modifier
-                .size(24.dp)
-                .padding(end = 8.dp),
-            tint = MaterialTheme.colorScheme.secondary
+            modifier =
+                Modifier
+                    .size(24.dp)
+                    .padding(end = 8.dp),
+            tint = MaterialTheme.colorScheme.secondary,
         )
         Text(
             text = text,
             fontSize = 18.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
     }
 }

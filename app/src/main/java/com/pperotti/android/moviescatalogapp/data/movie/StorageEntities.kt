@@ -15,7 +15,7 @@ class StorageMovieListResult(
     @PrimaryKey
     val page: Int,
     val totalPages: Int,
-    val totalResults: Int
+    val totalResults: Int,
 )
 
 @Entity(tableName = "movies")
@@ -35,7 +35,7 @@ class StorageMovie(
     val title: String?,
     val video: Boolean?,
     val voteAverage: Float?,
-    val voteCount: Int?
+    val voteCount: Int?,
 )
 
 @Dao
@@ -63,16 +63,15 @@ interface MovieDao {
 
     @Query("SELECT COUNT(*) FROM movielistresult")
     suspend fun hasMovieListResult(): Int
-
 }
 
 @Database(
     entities = [
         StorageMovie::class,
-        StorageMovieListResult::class
+        StorageMovieListResult::class,
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 @TypeConverters(MovieTypeConverters::class)
 abstract class MovieDatabase : RoomDatabase() {
@@ -94,7 +93,7 @@ fun StorageMovie.toMovieItem(): DataMovieItem {
         title = title,
         video = video,
         voteAverage = voteAverage,
-        voteCount = voteCount
+        voteCount = voteCount,
     )
 }
 
@@ -103,7 +102,6 @@ fun StorageMovieListResult.toMovieListResult(storageMovieList: List<StorageMovie
         page = page,
         results = storageMovieList.map { it.toMovieItem() },
         totalPages = totalPages,
-        totalResults = totalResults
+        totalResults = totalResults,
     )
 }
-

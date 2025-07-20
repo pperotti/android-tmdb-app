@@ -4,7 +4,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 interface MovieRemoteDataSource {
-
     /**
      * Retrieve the list of movies from the network.
      *
@@ -17,7 +16,7 @@ interface MovieRemoteDataSource {
     suspend fun fetchMovieList(
         includeAdult: Boolean = false,
         includeVideo: Boolean = false,
-        page: Int = 1
+        page: Int = 1,
     ): RemoteMovieListResult
 
     /**
@@ -31,20 +30,20 @@ interface MovieRemoteDataSource {
 }
 
 @Singleton
-class DefaultMovieRemoteDataSource @Inject constructor(
-    val tmdbApi: TmdbApi
-) : MovieRemoteDataSource {
+class DefaultMovieRemoteDataSource
+    @Inject
+    constructor(
+        val tmdbApi: TmdbApi,
+    ) : MovieRemoteDataSource {
+        override suspend fun fetchMovieList(
+            includeAdult: Boolean,
+            includeVideo: Boolean,
+            page: Int,
+        ): RemoteMovieListResult {
+            return tmdbApi.fetchMovieList(includeAdult, includeVideo, page)
+        }
 
-    override suspend fun fetchMovieList(
-        includeAdult: Boolean,
-        includeVideo: Boolean,
-        page: Int
-    ): RemoteMovieListResult {
-        return tmdbApi.fetchMovieList(includeAdult, includeVideo, page)
+        override suspend fun fetchMovieDetails(id: Int): RemoteMovieDetails {
+            return tmdbApi.fetchMovieDetails(id)
+        }
     }
-
-    override suspend fun fetchMovieDetails(id: Int): RemoteMovieDetails {
-        return tmdbApi.fetchMovieDetails(id)
-    }
-}
-

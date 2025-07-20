@@ -49,7 +49,7 @@ import com.pperotti.android.moviescatalogapp.presentation.common.LoadingContent
 fun MainScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel = hiltViewModel(),
-    onMovieSelected: (id: Int) -> Unit
+    onMovieSelected: (id: Int) -> Unit,
 ) {
     // Invoke fetchData when the screen is first displayed
     LaunchedEffect(true) {
@@ -65,24 +65,26 @@ fun MainScreen(
 fun DrawScreenContent(
     uiState: MainUiState,
     modifier: Modifier,
-    onMovieSelected: (id: Int) -> Unit
+    onMovieSelected: (id: Int) -> Unit,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { MainScreenTopAppBar(modifier) }
+        topBar = { MainScreenTopAppBar(modifier) },
     ) { paddingValues ->
         when (uiState) {
             is MainUiState.Loading -> LoadingContent(modifier)
-            is MainUiState.Success -> MainListContent(
-                modifier = modifier.padding(paddingValues),
-                uiItems = uiState.items,
-                onMovieSelected = onMovieSelected
-            )
+            is MainUiState.Success ->
+                MainListContent(
+                    modifier = modifier.padding(paddingValues),
+                    uiItems = uiState.items,
+                    onMovieSelected = onMovieSelected,
+                )
 
-            is MainUiState.Error -> ErrorContent(
-                modifier = modifier,
-                message = uiState.message
-            )
+            is MainUiState.Error ->
+                ErrorContent(
+                    modifier = modifier,
+                    message = uiState.message,
+                )
         }
     }
 }
@@ -91,7 +93,7 @@ fun DrawScreenContent(
 fun MainListContent(
     uiItems: List<MainListItemUiState>,
     modifier: Modifier,
-    onMovieSelected: (id: Int) -> Unit
+    onMovieSelected: (id: Int) -> Unit,
 ) {
     val configuration = LocalConfiguration.current
     val columnSize = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 2 else 1
@@ -100,7 +102,7 @@ fun MainListContent(
     LazyVerticalGrid(
         columns = GridCells.Fixed(columnSize),
         contentPadding = PaddingValues(16.dp),
-        modifier = modifier
+        modifier = modifier,
     ) {
         items(uiItems) { item ->
             CardItemComposable(item, onMovieSelected = onMovieSelected)
@@ -112,33 +114,37 @@ fun MainListContent(
 @Composable
 fun CardItemComposable(
     item: MainListItemUiState,
-    onMovieSelected: (id: Int) -> Unit
+    onMovieSelected: (id: Int) -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .padding(12.dp)
-            .fillMaxSize(),
+        modifier =
+            Modifier
+                .padding(12.dp)
+                .fillMaxSize(),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         onClick = {
             onMovieSelected(item.id)
-        }
+        },
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.posterPath)
-                    .crossfade(true)
-                    .build(),
+                model =
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(item.posterPath)
+                        .crossfade(true)
+                        .build(),
                 contentDescription = item.title,
-                modifier = Modifier
-                    .fillMaxWidth(0.3f)
-                    .fillMaxHeight()
+                modifier =
+                    Modifier
+                        .fillMaxWidth(0.3f)
+                        .fillMaxHeight(),
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column {
@@ -146,13 +152,14 @@ fun CardItemComposable(
                     text = item.title ?: "-",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
+                    fontSize = 18.sp,
                 )
                 Spacer(
-                    modifier = Modifier
-                        .background(color = MaterialTheme.colorScheme.primary)
-                        .fillMaxWidth()
-                        .height(2.dp)
+                    modifier =
+                        Modifier
+                            .background(color = MaterialTheme.colorScheme.primary)
+                            .fillMaxWidth()
+                            .height(2.dp),
                 )
                 Text(text = "Rating: ${item.popularity}")
                 Text(
@@ -174,25 +181,23 @@ fun MainScreenTopAppBar(modifier: Modifier) {
         title = {
             Box(
                 modifier = modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = stringResource(id = R.string.main_list_top_bar_title),
                     modifier = modifier,
-                    fontSize = 20.sp
+                    fontSize = 20.sp,
                 )
             }
         },
-        colors = TopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            scrolledContainerColor = MaterialTheme.colorScheme.onPrimary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        modifier = modifier.fillMaxWidth()
+        colors =
+            TopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                scrolledContainerColor = MaterialTheme.colorScheme.onPrimary,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+        modifier = modifier.fillMaxWidth(),
     )
 }
-
-
-

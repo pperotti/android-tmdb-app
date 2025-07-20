@@ -7,7 +7,6 @@ package com.pperotti.android.moviescatalogapp.domain.common
  * @property T The type of the data offered by this layer.
  */
 sealed class DomainResult<T> {
-
     /**
      * The data created as a consequence a successfully executing an
      * operation in the domain layer.
