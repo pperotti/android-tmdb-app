@@ -21,49 +21,51 @@ interface GetLatestMovies {
  * Default implementation for the GetLatestMovies interface
  */
 class DefaultGetLatestMovies
-    @Inject
-    constructor(
-        val repository: MovieRepository,
-    ) : GetLatestMovies {
-        override suspend fun getLatestMovies(page: Int): DomainResult<DomainMovieListResult> {
-            return when (val movieResponse = repository.fetchMovieList()) {
-                is DataResult.Success ->
-                    transformDataResultIntoDomainResult(movieResponse.result)
+@Inject
+constructor(
+    val repository: MovieRepository,
+) : GetLatestMovies {
+    override suspend fun getLatestMovies(page: Int): DomainResult<DomainMovieListResult> {
+        return when (val movieResponse = repository.fetchMovieList()) {
+            is DataResult.Success ->
+                transformDataResultIntoDomainResult(movieResponse.result)
 
-                is DataResult.Error -> {
-                    DomainResult.Error(
-                        movieResponse.message,
-                        movieResponse.cause,
-                    )
-                }
-            }
-        }
-
-        private fun transformDataResultIntoDomainResult(dataMovieListResult: DataMovieListResult): DomainResult<DomainMovieListResult> {
-            val resultList: MutableList<DomainMovieItem> = mutableListOf()
-            dataMovieListResult.results.forEach { movie ->
-                resultList.add(
-                    DomainMovieItem(
-                        id = movie.id,
-                        title = movie.title,
-                        overview = movie.overview,
-                        popularity = movie.popularity,
-                        posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}",
-                    ),
+            is DataResult.Error -> {
+                DomainResult.Error(
+                    movieResponse.message,
+                    movieResponse.cause,
                 )
             }
+        }
+    }
 
-            // Publish Items to the UI
-            return DomainResult.Success(
-                DomainMovieListResult(
-                    page = dataMovieListResult.page,
-                    results = resultList,
-                    totalPages = dataMovieListResult.totalPages,
-                    totalResults = dataMovieListResult.totalResults,
+    private fun transformDataResultIntoDomainResult(
+        dataMovieListResult: DataMovieListResult
+    ): DomainResult<DomainMovieListResult> {
+        val resultList: MutableList<DomainMovieItem> = mutableListOf()
+        dataMovieListResult.results.forEach { movie ->
+            resultList.add(
+                DomainMovieItem(
+                    id = movie.id,
+                    title = movie.title,
+                    overview = movie.overview,
+                    popularity = movie.popularity,
+                    posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}",
                 ),
             )
         }
+
+        // Publish Items to the UI
+        return DomainResult.Success(
+            DomainMovieListResult(
+                page = dataMovieListResult.page,
+                results = resultList,
+                totalPages = dataMovieListResult.totalPages,
+                totalResults = dataMovieListResult.totalResults,
+            ),
+        )
     }
+}
 
 /**
  * Container for the list of movies from the domain's point of view

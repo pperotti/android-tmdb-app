@@ -1,7 +1,7 @@
 package com.pperotti.android.moviescatalogapp.presentation.details
 
 // State used for the UI drawing the details
-sealed class DetailsUiState() {
+sealed class DetailsUiState {
     object Loading : DetailsUiState()
 
     data class Success(val details: DetailsUiData) : DetailsUiState()
