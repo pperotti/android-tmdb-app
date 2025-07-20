@@ -1,3 +1,4 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 import java.util.Properties
 
 plugins {
@@ -6,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.ktlint)
 }
 
 // Load local.properties manually
@@ -63,6 +65,14 @@ android {
     }
 }
 
+ktlint {
+    android = true
+    ignoreFailures = false
+    reporters {
+        reporter(ReporterType.HTML)
+    }
+}
+
 dependencies {
 
     // Out-Of-The-Box libraries
@@ -101,6 +111,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    // Annotations
+    implementation(libs.androidx.annotation)
 
     // Testing
     testImplementation(libs.junit)

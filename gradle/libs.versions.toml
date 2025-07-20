@@ -1,23 +1,26 @@
 [versions]
-agp = "8.8.0"
-kotlin = "2.1.0"
-coreKtx = "1.15.0"
+agp = "8.10.1"
+annotation = "1.9.1"
+kotlin = "2.1.21"
+coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.10.0"
-composeBom = "2025.01.01"
-retrofitVersion = "2.9.0"
-hilt = "2.53.1"
-ksp = "2.1.0-1.0.29"
+lifecycleRuntimeKtx = "2.9.2"
+activityCompose = "1.10.1"
+composeBom = "2025.07.00"
+retrofitVersion = "2.11.0"
+hilt = "2.56.2"
+ksp = "2.1.21-2.0.2"
 androidxHiltNavigationCompose = "1.2.0"
-activityKtx = "1.10.0"
+activityKtx = "1.10.1"
 okhttp = "4.12.0"
 coilVersion = "3.0.4"
-roomRuntime = "2.6.1"
+roomRuntime = "2.7.2"
+ktlint = "12.2.0"
 
 [libraries]
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -54,3 +57,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
