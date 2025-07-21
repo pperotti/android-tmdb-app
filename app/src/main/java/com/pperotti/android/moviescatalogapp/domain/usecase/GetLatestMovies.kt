@@ -14,7 +14,10 @@ interface GetLatestMovies {
      * Retrieve a page with latest movies. If no page value
      * is provided, then the first page will be requested
      */
-    suspend fun getLatestMovies(page: Int = 0): DomainResult<DomainMovieListResult>
+    suspend fun getLatestMovies(
+        page: Int = 0,
+        forceRefresh: Boolean = false,
+    ): DomainResult<DomainMovieListResult>
 }
 
 /**
@@ -25,8 +28,16 @@ class DefaultGetLatestMovies
     constructor(
         val repository: MovieRepository,
     ) : GetLatestMovies {
-        override suspend fun getLatestMovies(page: Int): DomainResult<DomainMovieListResult> {
-            return when (val movieResponse = repository.fetchMovieList()) {
+        override suspend fun getLatestMovies(
+            page: Int,
+            forceRefresh: Boolean,
+        ): DomainResult<DomainMovieListResult> {
+            return when (
+                val movieResponse =
+                    repository.fetchMovieList(
+                        forceRefresh = forceRefresh,
+                    )
+            ) {
                 is DataResult.Success ->
                     transformDataResultIntoDomainResult(movieResponse.result)
 
