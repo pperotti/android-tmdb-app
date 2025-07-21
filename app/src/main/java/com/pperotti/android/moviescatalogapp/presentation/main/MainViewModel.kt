@@ -26,14 +26,19 @@ class MainViewModel
         val uiState: StateFlow<MainUiState> get() = _uiState
 
         // Request items from repository and convert them to UI items
-        fun requestData() {
+        fun requestData(forceRefresh: Boolean = false) {
             fetchJob?.cancel()
             fetchJob =
                 viewModelScope.launch {
                     // Indicates the UI that loading should be presented
                     _uiState.value = MainUiState.Loading
 
-                    when (val domainResponse = getLatestMovies.getLatestMovies()) {
+                    when (
+                        val domainResponse =
+                            getLatestMovies.getLatestMovies(
+                                forceRefresh = forceRefresh,
+                            )
+                    ) {
                         is DomainResult.Success ->
                             transformDomainResultIntoUiResult(domainResponse.result)
 

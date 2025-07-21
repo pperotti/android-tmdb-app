@@ -16,9 +16,11 @@ interface MovieRepository {
      * Request the repository to retrieve information about movies from
      * the network or local storage.
      *
+     * @param forceRefresh Boolean that indicates if the repository should interact with the
+     * network source.
      * @return MovieListResult encapsulated inside a RepositoryResponse
      */
-    suspend fun fetchMovieList(): DataResult<DataMovieListResult>
+    suspend fun fetchMovieList(forceRefresh: Boolean = false): DataResult<DataMovieListResult>
 
     /**
      * Retrieves from the network the details for the movie with the specified id.
@@ -39,10 +41,10 @@ class DefaultMovieRepository
         val remoteDataSource: MovieRemoteDataSource,
         val dispatcher: CoroutineDispatcher,
     ) : MovieRepository {
-        override suspend fun fetchMovieList(): DataResult<DataMovieListResult> {
+        override suspend fun fetchMovieList(forceRefresh: Boolean): DataResult<DataMovieListResult> {
             return withContext(dispatcher) {
                 try {
-                    if (!localDataSource.hasMovieListResult()) {
+                    if (forceRefresh || !localDataSource.hasMovieListResult()) {
                         val remoteMovieResultList = remoteDataSource.fetchMovieList()
                         localDataSource.saveMovieListResult(remoteMovieResultList)
                     }
