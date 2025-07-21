@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,7 +50,6 @@ import coil3.request.crossfade
 import com.pperotti.android.moviescatalogapp.R
 import com.pperotti.android.moviescatalogapp.presentation.common.ErrorContent
 import com.pperotti.android.moviescatalogapp.presentation.common.LoadingContent
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -97,6 +95,7 @@ fun DrawScreenContent(
                     onMovieSelected = onMovieSelected,
                     onPullToRefresh = onPullToRefresh,
                 )
+
             is MainUiState.Error ->
                 ErrorContent(
                     modifier = modifier,
@@ -120,11 +119,9 @@ fun MainListContent(
     var isRefreshInProgress by remember {
         mutableStateOf(false)
     }
-    val refreshState = rememberPullToRefreshState()
     val coroutineScope = rememberCoroutineScope()
 
     PullToRefreshBox(
-        state = refreshState,
         isRefreshing = isRefreshInProgress,
         onRefresh = {
             isRefreshInProgress = true
