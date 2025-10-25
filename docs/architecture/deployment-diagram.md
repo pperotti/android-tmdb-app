@@ -1,101 +1,149 @@
 # Deployment Diagram
 
-This diagram shows the Clean Architecture layers and main packages within the TMDB Android Application.
+This UML 2.5 deployment diagram shows the Clean Architecture layers and component distribution within the TMDB Android Application.
 
 ```mermaid
 graph TB
-    subgraph "Presentation Layer"
-        P1[presentation.main<br/>MainScreen]
-        P2[presentation.details<br/>DetailsScreen]
-        P3[presentation.navigation<br/>Navigation Graph]
-        P4[presentation.ui<br/>UI Components & Theme]
-        P5[presentation.common<br/>Common UI Utils]
-        P6[presentation.di<br/>Presentation DI Modules]
+    subgraph Device["<<device>><br/>Android Device"]
+        subgraph AppRuntime["<<execution environment>><br/>Android Runtime (ART)"]
+            subgraph PresentationNode["<<node>><br/>Presentation Layer"]
+                MainComp["<<component>><br/>presentation.main<br/>---<br/>MainScreen<br/>MainViewModel"]
+                DetailsComp["<<component>><br/>presentation.details<br/>---<br/>DetailsScreen<br/>DetailsViewModel"]
+                NavComp["<<component>><br/>presentation.navigation<br/>---<br/>Navigation Graph"]
+                UIComp["<<component>><br/>presentation.ui<br/>---<br/>Compose Components<br/>Theme"]
+            end
+            
+            subgraph DomainNode["<<node>><br/>Domain Layer"]
+                UseCaseComp["<<component>><br/>domain.usecase<br/>---<br/>GetLatestMovies<br/>GetMovieDetails"]
+                DomainCommonComp["<<component>><br/>domain.common<br/>---<br/>DomainResult<br/>Domain Models"]
+            end
+            
+            subgraph DataNode["<<node>><br/>Data Layer"]
+                RepoComp["<<component>><br/>data.movie<br/>---<br/>MovieRepository<br/>RemoteDataSource<br/>LocalDataSource"]
+                DataCommonComp["<<component>><br/>data.common<br/>---<br/>DataResult<br/>DTOs"]
+            end
+            
+            subgraph DINode["<<node>><br/>Dependency Injection"]
+                HiltComp["<<component>><br/>di<br/>---<br/>Hilt Modules<br/>@HiltAndroidApp"]
+            end
+            
+            subgraph StorageNode["<<node>><br/>Local Storage"]
+                RoomDB[("<<artifact>><br/>Room Database<br/>---<br/>SQLite")]
+            end
+        end
     end
-
-    subgraph "Domain Layer"
-        D1[domain.usecase<br/>GetLatestMovies<br/>GetMovieDetails]
-        D2[domain.common<br/>DomainResult<br/>Domain Models]
-        D3[domain.di<br/>Domain DI Modules]
-    end
-
-    subgraph "Data Layer"
-        DA1[data.movie<br/>MovieRepository<br/>RemoteDataSource<br/>LocalDataSource]
-        DA2[data.common<br/>DataResult<br/>Data Models]
-        DA3[data.di<br/>Data DI Modules<br/>Network Module<br/>Database Module]
-    end
-
-    subgraph "External Services"
-        API[TMDB API<br/>api.themoviedb.org]
-        DB[(Room Database<br/>Local Storage)]
-    end
-
-    subgraph "Dependency Injection"
-        DI[di<br/>Application DI<br/>Hilt Configuration]
-    end
-
-    P1 --> D1
-    P2 --> D1
-    P3 --> P1
-    P3 --> P2
     
-    D1 --> DA1
-    D2 -.-> D1
+    subgraph Cloud["<<cloud>><br/>Internet"]
+        TMDBAPI["<<component>><br/>TMDB API<br/>---<br/>api.themoviedb.org<br/>REST API"]
+    end
     
-    DA1 --> API
-    DA1 --> DB
-    DA2 -.-> DA1
+    MainComp -->|uses| UseCaseComp
+    DetailsComp -->|uses| UseCaseComp
+    NavComp -->|controls| MainComp
+    NavComp -->|controls| DetailsComp
     
-    DI --> P6
-    DI --> D3
-    DI --> DA3
+    UseCaseComp -->|uses| RepoComp
+    UseCaseComp -.->|depends on| DomainCommonComp
     
-    P6 -.-> P1
-    P6 -.-> P2
-    D3 -.-> D1
-    DA3 -.-> DA1
-
+    RepoComp -->|HTTP/HTTPS| TMDBAPI
+    RepoComp -->|JDBC| RoomDB
+    RepoComp -.->|depends on| DataCommonComp
+    
+    HiltComp -.->|provides| MainComp
+    HiltComp -.->|provides| DetailsComp
+    HiltComp -.->|provides| UseCaseComp
+    HiltComp -.->|provides| RepoComp
+    
+    classDef deviceStyle fill:#f5f5f5,stroke:#333,stroke-width:3px
     classDef presentationStyle fill:#e1f5ff,stroke:#01579b,stroke-width:2px
     classDef domainStyle fill:#fff9c4,stroke:#f57f17,stroke-width:2px
     classDef dataStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef infrastructureStyle fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
     classDef externalStyle fill:#ffebee,stroke:#b71c1c,stroke-width:2px
-    classDef diStyle fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef storageStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
 
-    class P1,P2,P3,P4,P5,P6 presentationStyle
-    class D1,D2,D3 domainStyle
-    class DA1,DA2,DA3 dataStyle
-    class API,DB externalStyle
-    class DI diStyle
+    class Device,AppRuntime deviceStyle
+    class PresentationNode,MainComp,DetailsComp,NavComp,UIComp presentationStyle
+    class DomainNode,UseCaseComp,DomainCommonComp domainStyle
+    class DataNode,RepoComp,DataCommonComp dataStyle
+    class DINode,HiltComp infrastructureStyle
+    class Cloud,TMDBAPI externalStyle
+    class StorageNode,RoomDB storageStyle
 ```
 
-## Layer Descriptions
+## UML 2.5 Compliance
 
-### Presentation Layer
-- **Main Package**: UI screens and ViewModels for displaying movie lists
-- **Details Package**: UI screens and ViewModels for movie details
-- **Navigation**: Navigation graph and routing logic
-- **UI Package**: Reusable Compose components and theme configuration
-- **Common**: Shared presentation utilities
-- **DI**: Hilt modules for presentation layer dependencies
+This diagram follows UML 2.5 deployment diagram specifications:
 
-### Domain Layer
-- **Use Case Package**: Business logic interfaces and implementations
-  - `GetLatestMovies`: Retrieves paginated list of latest movies
-  - `GetMovieDetails`: Retrieves detailed information for a specific movie
-- **Common**: Domain models and result wrappers
-- **DI**: Hilt modules for domain layer dependencies
+### Stereotypes Used
+- **`<<device>>`**: Physical computing resource (Android Device)
+- **`<<execution environment>>`**: Software platform (Android Runtime)
+- **`<<node>>`**: Computational resource (architectural layers)
+- **`<<component>>`**: Modular software units (packages and modules)
+- **`<<artifact>>`**: Physical file or database (SQLite database)
+- **`<<cloud>>`**: Internet-based services
 
-### Data Layer
-- **Movie Package**: Repository and data source implementations
-  - `MovieRepository`: Single source of truth for movie data
-  - Remote and local data sources
-- **Common**: Data models (DTOs) and result wrappers
-- **DI**: Network configuration (Retrofit, OkHttp) and database setup (Room)
+### Relationships
+- **Solid arrows**: Dependencies and communication paths
+- **Dashed arrows**: Deployment/provision relationships
+- **Labels**: Communication protocols (HTTP/HTTPS, JDBC)
 
-### External Dependencies
-- **TMDB API**: RESTful API providing movie data
-- **Room Database**: Local SQLite database for caching
+## Architecture Layers
 
-### Dependency Injection
-- **Application DI**: Hilt configuration at application level
-- Coordinates dependency provision across all layers
+### Device Layer
+- **Android Device**: Physical mobile device running the application
+- **Android Runtime (ART)**: Execution environment for the app
+
+### Application Layers
+
+#### Presentation Layer (Node)
+Components handling UI and user interaction:
+- **presentation.main**: Main screen with movie list
+- **presentation.details**: Movie details screen
+- **presentation.navigation**: Navigation graph and routing
+- **presentation.ui**: Reusable Compose components and theme
+
+#### Domain Layer (Node)
+Business logic components:
+- **domain.usecase**: Business rules implementation
+  - `GetLatestMovies`: Retrieves paginated movie lists
+  - `GetMovieDetails`: Retrieves specific movie details
+- **domain.common**: Domain models and result wrappers
+
+#### Data Layer (Node)
+Data access and management components:
+- **data.movie**: Repository and data source implementations
+  - `MovieRepository`: Single source of truth
+  - `RemoteDataSource`: API communication
+  - `LocalDataSource`: Database operations
+- **data.common**: Data transfer objects (DTOs) and result types
+
+#### Dependency Injection (Node)
+Infrastructure for dependency management:
+- **di**: Hilt configuration and modules
+- Provides instances across all layers
+
+### External Systems
+
+#### Local Storage
+- **Room Database**: SQLite-based local persistence
+- Connected via JDBC protocol
+- Stores cached movie data
+
+#### Cloud Services
+- **TMDB API**: RESTful web service
+- Accessible via HTTP/HTTPS
+- Provides movie data and images
+
+## Communication Protocols
+
+- **HTTP/HTTPS**: Secure communication with TMDB API
+- **JDBC**: Database access protocol for Room
+- **Dependency Injection**: Hilt provides component instances
+
+## Deployment Characteristics
+
+- **Single Device Deployment**: All application components run on the Android device
+- **Client-Server Architecture**: App acts as client to TMDB API
+- **Local Caching**: Room database enables offline functionality
+- **Layered Architecture**: Clean separation of concerns across layers
