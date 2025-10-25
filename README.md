@@ -10,6 +10,9 @@
   - [Key Technical Decisions](#key-technical-decisions)
     - [Libraries](#libraries)
     - [The project support two scenarios](#the-project-support-two-scenarios)
+  - [Architecture](#architecture)
+    - [Deployment Diagram](#deployment-diagram)
+    - [Use Case Diagrams](#use-case-diagrams)
   - [Screenshots](#screenshots)
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
@@ -58,29 +61,50 @@ No Java code should be used in new features in modern application written from s
 * List A page of latest movies
 * Get the details of a movie
 
+## Architecture
+
+The application follows **Clean Architecture** principles with three distinct layers: Presentation, Domain, and Data. This separation ensures maintainability, testability, and scalability.
+
+For detailed architecture documentation, including UML diagrams and use case flows, please visit:
+
+📂 **[Architecture Documentation](docs/architecture/README.md)**
+
+### What's Inside
+
+The architecture documentation includes:
+
+- **Deployment Diagram**: UML 2.5 compliant diagram showing the Clean Architecture layers, packages, and component distribution across presentation, domain, and data layers
+- **Use Case Diagrams**: 
+  - Get Latest Movies - Flow for viewing the movie list with caching strategy
+  - Get Movie Details - Flow for viewing individual movie details
+- **Architectural Patterns**: Unidirectional Data Flow, Repository Pattern, Dependency Injection
+- **Layer Descriptions**: Detailed breakdown of each architectural layer and its responsibilities
+
+[View Complete Architecture Documentation →](docs/architecture/README.md)
+
 ## Screenshots
 Here are some screenshots of the app.
 
 <table>
   <tr>
     <td colspan="2" style="text-align:center;">
-        <img src="documentation/images/TMDB_Logo.png" alt="Logo" style="width:20%;height:20%">
+        <img src="docs/images/TMDB_Logo.png" alt="Logo" style="width:20%;height:20%">
     </td>
   </tr>
   <tr>
     <td style="text-align:center;">
-      <img src="documentation/images/latest_movies.png" alt="Main Screen showing a list of movies" style="width:50%;height:50%;">
+      <img src="docs/images/latest_movies.png" alt="Main Screen showing a list of movies" style="width:50%;height:50%;">
     </td>    
     <td>
-      <img src="documentation/images/latest_movies_landscape.png" alt="Main Screen showing a list of movies" style="width:80%;height:80%;">      
+      <img src="docs/images/latest_movies_landscape.png" alt="Main Screen showing a list of movies" style="width:80%;height:80%;">      
     </td>    
   </tr>
   <tr>
     <td style="text-align:center;">
-      <img src="documentation/images/movie_details.png" alt="Screen showing the list of a movie." style="width:50%;height:50%;">
+      <img src="docs/images/movie_details.png" alt="Screen showing the list of a movie." style="width:50%;height:50%;">
     </td>    
     <td>
-      <img src="documentation/images/movie_details_landscape.png" alt="Screen showing the list of a movie." style="width:80%;height:80%;">    
+      <img src="docs/images/movie_details_landscape.png" alt="Screen showing the list of a movie." style="width:80%;height:80%;">    
     </td>    
   </tr>
 </table>
