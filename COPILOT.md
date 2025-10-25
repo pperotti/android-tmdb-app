@@ -242,7 +242,6 @@ test(viewmodel): add unit tests for MovieDetailsViewModel
 
 **Commit Message Rules**:
 - Use imperative mood ("add" not "added" or "adds")
-- Don't capitalize the first letter after the colon
 - No period at the end
 - Keep the subject line under 72 characters
 - Add a body if needed to explain the "why" behind changes
@@ -286,12 +285,45 @@ test(viewmodel): add unit tests for MovieDetailsViewModel
    - Ensure the app builds successfully
 
 #### Branch Strategy
-- `main`: production-ready code (protected)
+- `master`: production-ready code (protected)
 - `develop`: integration branch for ongoing development
 - `feature/*`: new features (e.g., `feature/search-movies`)
 - `bugfix/*`: bug fixes (e.g., `bugfix/image-loading-crash`)
 - `hotfix/*`: urgent production fixes (e.g., `hotfix/api-token-expiry`)
 - `refactor/*`: code refactoring (e.g., `refactor/repository-layer`)
+
+#### Branch Naming Enforcement
+
+**IMPORTANT**: Branches that do not follow the naming conventions will be rejected during push.
+
+The repository is configured with a pre-push hook that validates branch names before allowing a push to the remote repository. This ensures all branches follow the established naming strategy.
+
+**Allowed Branch Patterns**:
+- `master` - main production branch
+- `develop` - integration branch
+- `feature/*` - feature branches (e.g., `feature/movie-search`)
+- `bugfix/*` - bug fix branches (e.g., `bugfix/crash-on-empty-list`)
+- `hotfix/*` - urgent fix branches (e.g., `hotfix/security-patch`)
+- `refactor/*` - refactoring branches (e.g., `refactor/data-layer`)
+- `docs/*` - documentation branches (e.g., `docs/update-readme`)
+- `test/*` - test-related branches (e.g., `test/integration-tests`)
+- `chore/*` - maintenance branches (e.g., `chore/update-dependencies`)
+
+**What Happens on Invalid Branch Names**:
+If you attempt to push a branch with an invalid name, the push will be rejected with an error message indicating:
+- The branch name does not follow conventions
+- Which naming patterns are allowed
+- Examples of valid branch names
+
+**To Fix an Invalid Branch Name**:
+```bash
+# Rename your current branch
+git branch -m old-branch-name new-valid-branch-name
+
+# If already pushed, delete the remote branch and push with new name
+git push origin --delete old-branch-name
+git push -u origin new-valid-branch-name
+```
 
 #### Creating Pull Requests
 
@@ -403,7 +435,7 @@ Related to #(issue number)
 
 **After Merge**:
 1. Delete the feature branch
-2. Verify the change in `develop` or `main`
+2. Verify the change in `develop` or `master`
 3. Monitor for any issues
 4. Update related documentation if needed
 
