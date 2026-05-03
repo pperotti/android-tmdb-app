@@ -4,6 +4,8 @@
     <!-- Top Bar Titles -->
     <string name="main_list_top_bar_title">Latest Movies</string>
     <string name="movie_details_top_bar_title">Movie Details</string>
+    <string name="main_list_empty_state_message">No movies were found. Pull to refresh or try again later.</string>
+    <string name="main_list_empty_state_refresh">Refresh</string>
 
     <!-- Content Descriptions -->
     <string name="top_bar_back_button_description">Back</string>

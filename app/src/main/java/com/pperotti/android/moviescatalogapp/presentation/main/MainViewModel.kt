@@ -7,8 +7,12 @@ import com.pperotti.android.moviescatalogapp.domain.usecase.DomainMovieListResul
 import com.pperotti.android.moviescatalogapp.domain.usecase.GetLatestMovies
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,52 +25,110 @@ class MainViewModel
         // A Job is required so you can cancel a running coroutine
         private var fetchJob: Job? = null
 
-        // StateFlow to hold the UI state
         private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
-        val uiState: StateFlow<MainUiState> get() = _uiState
+        val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
-        // Request items from repository and convert them to UI items
+        private val _uiEvents = MutableSharedFlow<UiEvent>(extraBufferCapacity = 1)
+        val uiEvents: SharedFlow<UiEvent> = _uiEvents.asSharedFlow()
+
+        private var currentItems: List<MainListItemUiState> = emptyList()
+        private var currentPage = 1
+        private var totalPages = 1
+        private var isLoadingMore = false
+
         fun requestData(forceRefresh: Boolean = false) {
+            loadMovies(page = 1, forceRefresh = forceRefresh, append = false)
+        }
+
+        fun requestNextPage() {
+            if (isLoadingMore || currentPage >= totalPages) {
+                return
+            }
+            loadMovies(page = currentPage + 1, forceRefresh = false, append = true)
+        }
+
+        private fun loadMovies(page: Int, forceRefresh: Boolean, append: Boolean) {
             fetchJob?.cancel()
-            fetchJob =
-                viewModelScope.launch {
-                    // Indicates the UI that loading should be presented
+            fetchJob = viewModelScope.launch {
+                if (append) {
+                    _uiState.value = MainUiState.Success(
+                        items = currentItems,
+                        currentPage = currentPage,
+                        totalPages = totalPages,
+                        isLoadingMore = true,
+                    )
+                } else {
                     _uiState.value = MainUiState.Loading
+                }
 
-                    when (
-                        val domainResponse =
-                            getLatestMovies.getLatestMovies(
-                                forceRefresh = forceRefresh,
+                when (
+                    val domainResponse =
+                        getLatestMovies.getLatestMovies(
+                            page = page,
+                            forceRefresh = forceRefresh,
+                        )
+                ) {
+                    is DomainResult.Success -> {
+                        val mergedItems = transformDomainResultIntoUiResult(domainResponse.result, append)
+                        currentItems = mergedItems
+                        currentPage = domainResponse.result.page
+                        totalPages = domainResponse.result.totalPages
+                        isLoadingMore = false
+
+                        _uiState.value = MainUiState.Success(
+                            items = mergedItems,
+                            currentPage = currentPage,
+                            totalPages = totalPages,
+                            isLoadingMore = false,
+                        )
+
+                        if (append && domainResponse.result.results.isEmpty()) {
+                            _uiEvents.tryEmit(UiEvent.ShowNoMoreDataToast)
+                        }
+                    }
+
+                    is DomainResult.Error -> {
+                        if (append) {
+                            _uiState.value = MainUiState.Success(
+                                items = currentItems,
+                                currentPage = currentPage,
+                                totalPages = totalPages,
+                                isLoadingMore = false,
                             )
-                    ) {
-                        is DomainResult.Success ->
-                            transformDomainResultIntoUiResult(domainResponse.result)
-
-                        is DomainResult.Error -> {
-                            _uiState.value =
-                                MainUiState.Error(
-                                    domainResponse.message,
-                                )
+                            _uiEvents.tryEmit(
+                                UiEvent.ShowErrorToast(domainResponse.message ?: "Unable to load more movies"),
+                            )
+                        } else {
+                            _uiState.value = MainUiState.Error(domainResponse.message)
                         }
                     }
                 }
+            }
         }
 
-        private fun transformDomainResultIntoUiResult(domainMovieListResult: DomainMovieListResult) {
-            val resultList: MutableList<MainListItemUiState> = mutableListOf()
-            domainMovieListResult.results.forEach { movie ->
-                resultList.add(
-                    MainListItemUiState(
-                        id = movie.id,
-                        title = movie.title,
-                        overview = movie.overview,
-                        popularity = movie.popularity,
-                        posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}",
-                    ),
+        private fun transformDomainResultIntoUiResult(
+            domainMovieListResult: DomainMovieListResult,
+            append: Boolean,
+        ): List<MainListItemUiState> {
+            val resultList = domainMovieListResult.results.map { movie ->
+                MainListItemUiState(
+                    id = movie.id,
+                    title = movie.title,
+                    overview = movie.overview,
+                    popularity = movie.popularity,
+                    posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}",
                 )
             }
 
-            // Publish Items to the UI
-            _uiState.value = MainUiState.Success(items = resultList)
+            return if (append) {
+                currentItems + resultList
+            } else {
+                resultList
+            }
         }
     }
+
+sealed class UiEvent {
+    object ShowNoMoreDataToast : UiEvent()
+    data class ShowErrorToast(val message: String) : UiEvent()
+}

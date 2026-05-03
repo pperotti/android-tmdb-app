@@ -33,8 +33,12 @@ class DefaultMovieLocalDataSource
         }
 
         override suspend fun saveMovieListResult(remoteMovieListResult: RemoteMovieListResult) {
-            movieDao.deleteMovieListResult()
-            movieDao.deleteAllMovies()
+            if (remoteMovieListResult.page == 1) {
+                movieDao.deleteMovieListResult()
+                movieDao.deleteAllMovies()
+            } else {
+                movieDao.deleteMovieListResult()
+            }
             movieDao.insertMovieListResult(remoteMovieListResult.toStorageMovieListResult())
             movieDao.insertAll(
                 remoteMovieListResult.results.map {

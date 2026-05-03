@@ -15,7 +15,7 @@ interface GetLatestMovies {
      * is provided, then the first page will be requested
      */
     suspend fun getLatestMovies(
-        page: Int = 0,
+        page: Int = 1,
         forceRefresh: Boolean = false,
     ): DomainResult<DomainMovieListResult>
 }
@@ -35,6 +35,7 @@ class DefaultGetLatestMovies
             return when (
                 val movieResponse =
                     repository.fetchMovieList(
+                        page = page,
                         forceRefresh = forceRefresh,
                     )
             ) {

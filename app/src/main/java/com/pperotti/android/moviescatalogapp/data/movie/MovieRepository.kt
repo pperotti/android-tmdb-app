@@ -16,11 +16,12 @@ interface MovieRepository {
      * Request the repository to retrieve information about movies from
      * the network or local storage.
      *
+     * @param page The requested page from the TMDB API.
      * @param forceRefresh Boolean that indicates if the repository should interact with the
      * network source.
      * @return MovieListResult encapsulated inside a RepositoryResponse
      */
-    suspend fun fetchMovieList(forceRefresh: Boolean = false): DataResult<DataMovieListResult>
+    suspend fun fetchMovieList(page: Int = 1, forceRefresh: Boolean = false): DataResult<DataMovieListResult>
 
     /**
      * Retrieves from the network the details for the movie with the specified id.
@@ -41,11 +42,11 @@ class DefaultMovieRepository
         val remoteDataSource: MovieRemoteDataSource,
         val dispatcher: CoroutineDispatcher,
     ) : MovieRepository {
-        override suspend fun fetchMovieList(forceRefresh: Boolean): DataResult<DataMovieListResult> {
+        override suspend fun fetchMovieList(page: Int, forceRefresh: Boolean): DataResult<DataMovieListResult> {
             return withContext(dispatcher) {
                 try {
-                    if (forceRefresh || !localDataSource.hasMovieListResult()) {
-                        val remoteMovieResultList = remoteDataSource.fetchMovieList()
+                    if (forceRefresh || !localDataSource.hasMovieListResult() || page > 1) {
+                        val remoteMovieResultList = remoteDataSource.fetchMovieList(page = page)
                         localDataSource.saveMovieListResult(remoteMovieResultList)
                     }
                     DataResult.Success(localDataSource.getMovieListResult())

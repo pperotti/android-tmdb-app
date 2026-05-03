@@ -4,9 +4,14 @@ package com.pperotti.android.moviescatalogapp.presentation.main
  * This is the state that represents what the screen will look like
  */
 sealed class MainUiState {
-    data object Loading : MainUiState()
+    object Loading : MainUiState()
 
-    data class Success(val items: List<MainListItemUiState>) : MainUiState()
+    data class Success(
+        val items: List<MainListItemUiState>,
+        val currentPage: Int = 1,
+        val totalPages: Int = 1,
+        val isLoadingMore: Boolean = false,
+    ) : MainUiState()
 
     data class Error(val message: String?) : MainUiState()
 }
