@@ -46,8 +46,8 @@ The current app retrieves movies in a single dataset and caches them locally as 
 4. Add end-of-list detection and page-load handling to the main screen.
 5. Validate with initial and subsequent page loads, pull-to-refresh, and error flows.
 
-## Open Questions
+## Decisions Resolved
 
-- Should the app prefetch page N+1 as soon as page N is loaded, or only when the user scrolls near the end?
-- What is the expected behavior when TMDB returns an empty page within the valid range?
-- Should page size or other discover filters be exposed later as a separate feature?
+- Only when the user scrolls to the end (not prefetch).
+- If the page is page 1, then display the empty state. If it is a subsequent page, then hide the loading spinner and present a toast saying "No more data available".
+- Page size and discover filters will be treated as separate features in the future.
