@@ -49,7 +49,7 @@ class DefaultMovieRepository
                         val remoteMovieResultList = remoteDataSource.fetchMovieList(page = page)
                         localDataSource.saveMovieListResult(remoteMovieResultList)
                     }
-                    DataResult.Success(localDataSource.getMovieListResult())
+                    DataResult.Success(localDataSource.getMovieListResult(page))
                 } catch (e: IOException) {
                     DataResult.Error(e.localizedMessage, e.cause)
                 }

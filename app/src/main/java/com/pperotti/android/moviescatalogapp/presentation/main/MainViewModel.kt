@@ -25,9 +25,11 @@ class MainViewModel
         // A Job is required so you can cancel a running coroutine
         private var fetchJob: Job? = null
 
+        // State represents what the UI renders
         private val _uiState = MutableStateFlow<MainUiState>(MainUiState.Loading)
         val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
+        // Events represents one-time UI events like toasts or navigation
         private val _uiEvents = MutableSharedFlow<UiEvent>(extraBufferCapacity = 1)
         val uiEvents: SharedFlow<UiEvent> = _uiEvents.asSharedFlow()
 
