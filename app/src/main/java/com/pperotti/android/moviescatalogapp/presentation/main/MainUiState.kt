@@ -11,6 +11,7 @@ sealed class MainUiState {
         val currentPage: Int = 1,
         val totalPages: Int = 1,
         val isLoadingMore: Boolean = false,
+        val selectedMovieId: Int? = null,
     ) : MainUiState()
 
     data class Error(val message: String?) : MainUiState()

@@ -37,8 +37,12 @@ class MainViewModel
         private var currentPage = 1
         private var totalPages = 1
         private var isLoadingMore = false
+        private var selectedMovieId: Int? = null
 
         fun requestData(forceRefresh: Boolean = false) {
+            if (forceRefresh) {
+                selectedMovieId = null
+            }
             loadMovies(page = 1, forceRefresh = forceRefresh, append = false)
         }
 
@@ -49,15 +53,28 @@ class MainViewModel
             loadMovies(page = currentPage + 1, forceRefresh = false, append = true)
         }
 
+        fun selectMovie(movieId: Int) {
+            selectedMovieId = movieId
+            // Update the current state to reflect the selection
+            val currentState = _uiState.value
+            if (currentState is MainUiState.Success) {
+                _uiState.value = currentState.copy(selectedMovieId = selectedMovieId)
+            }
+        }
+
         private fun loadMovies(page: Int, forceRefresh: Boolean, append: Boolean) {
             fetchJob?.cancel()
             fetchJob = viewModelScope.launch {
+                if (!append) {
+                    selectedMovieId = null
+                }
                 if (append) {
                     _uiState.value = MainUiState.Success(
                         items = currentItems,
                         currentPage = currentPage,
                         totalPages = totalPages,
                         isLoadingMore = true,
+                        selectedMovieId = selectedMovieId,
                     )
                 } else {
                     _uiState.value = MainUiState.Loading
@@ -82,6 +99,7 @@ class MainViewModel
                             currentPage = currentPage,
                             totalPages = totalPages,
                             isLoadingMore = false,
+                            selectedMovieId = selectedMovieId,
                         )
 
                         if (append && domainResponse.result.results.isEmpty()) {
@@ -96,6 +114,7 @@ class MainViewModel
                                 currentPage = currentPage,
                                 totalPages = totalPages,
                                 isLoadingMore = false,
+                                selectedMovieId = selectedMovieId,
                             )
                             _uiEvents.tryEmit(
                                 UiEvent.ShowErrorToast(domainResponse.message ?: "Unable to load more movies"),
