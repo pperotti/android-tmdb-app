@@ -45,7 +45,7 @@ class DefaultMovieRepository
         override suspend fun fetchMovieList(page: Int, forceRefresh: Boolean): DataResult<DataMovieListResult> {
             return withContext(dispatcher) {
                 try {
-                    if (forceRefresh || !localDataSource.hasMovieListResult() || page > 1) {
+                    if (forceRefresh || !localDataSource.hasMovieListResult(page) || page > 1) {
                         val remoteMovieResultList = remoteDataSource.fetchMovieList(page = page)
                         localDataSource.saveMovieListResult(remoteMovieResultList)
                     }
