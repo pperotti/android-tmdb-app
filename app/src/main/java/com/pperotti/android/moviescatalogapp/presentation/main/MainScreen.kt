@@ -5,6 +5,7 @@ package com.pperotti.android.moviescatalogapp.presentation.main
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -89,7 +91,10 @@ fun MainScreen(
     DrawScreenContent(
         uiState = state,
         modifier = modifier,
-        onMovieSelected = onMovieSelected,
+        onMovieSelected = { id ->
+            mainViewModel.selectMovie(id)
+            onMovieSelected(id)
+        },
         onPullToRefresh = {
             mainViewModel.requestData(forceRefresh = true)
         },
@@ -126,6 +131,7 @@ fun DrawScreenContent(
                         currentPage = uiState.currentPage,
                         totalPages = uiState.totalPages,
                         isLoadingMore = uiState.isLoadingMore,
+                        selectedMovieId = uiState.selectedMovieId,
                         onMovieSelected = onMovieSelected,
                         onPullToRefresh = onPullToRefresh,
                         onLoadMore = onLoadMore,
@@ -148,6 +154,7 @@ fun MainListContent(
     currentPage: Int,
     totalPages: Int,
     isLoadingMore: Boolean,
+    selectedMovieId: Int?,
     modifier: Modifier,
     onMovieSelected: (id: Int) -> Unit,
     onPullToRefresh: () -> Unit,
@@ -193,7 +200,7 @@ fun MainListContent(
             modifier = modifier.fillMaxSize(),
         ) {
             items(uiItems) { item ->
-                CardItemComposable(item, onMovieSelected = onMovieSelected)
+                CardItemComposable(item, selectedMovieId = selectedMovieId, onMovieSelected = onMovieSelected)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -246,13 +253,20 @@ fun EmptyContent(
 @Composable
 fun CardItemComposable(
     item: MainListItemUiState,
+    selectedMovieId: Int?,
     onMovieSelected: (id: Int) -> Unit,
 ) {
+    val isSelected = selectedMovieId == item.id
     Card(
         modifier =
             Modifier
                 .padding(12.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .border(
+                    width = if (isSelected) 3.dp else 0.dp,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                    shape = RoundedCornerShape(16.dp),
+                ),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         onClick = {
