@@ -47,6 +47,9 @@ interface MovieDao {
     @Query("SELECT * FROM movies")
     suspend fun getAllMovies(): List<StorageMovie>
 
+    @Query("SELECT * FROM movies WHERE page = :page")
+    suspend fun getMoviesByPage(page: Int): List<StorageMovie>
+
     @Query("SELECT COUNT(*) FROM movies")
     suspend fun getMovieCount(): Int
 
@@ -56,14 +59,14 @@ interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovieListResult(movieListResult: StorageMovieListResult)
 
-    @Query("SELECT * FROM movielistresult")
-    suspend fun getMovieListResult(): StorageMovieListResult
+    @Query("SELECT * FROM movielistresult WHERE page = :page")
+    suspend fun getMovieListResult(page: Int): StorageMovieListResult
 
     @Query("DELETE FROM movielistresult")
     suspend fun deleteMovieListResult()
 
-    @Query("SELECT COUNT(*) FROM movielistresult")
-    suspend fun hasMovieListResult(): Int
+    @Query("SELECT COUNT(*) FROM movielistresult WHERE page = :page")
+    suspend fun hasMovieListResult(page: Int): Int
 }
 
 @Database(

@@ -7,7 +7,7 @@ interface MovieLocalDataSource {
     /**
      * Retrieve the list of stored movies
      */
-    suspend fun getMovieListResult(): DataMovieListResult
+    suspend fun getMovieListResult(page: Int): DataMovieListResult
 
     /**
      * Persist the MovieListResults
@@ -17,7 +17,7 @@ interface MovieLocalDataSource {
     /**
      * Determine whether there is a previous stored record in the DB
      */
-    suspend fun hasMovieListResult(): Boolean
+    suspend fun hasMovieListResult(page: Int): Boolean
 }
 
 @Singleton
@@ -26,15 +26,17 @@ class DefaultMovieLocalDataSource
     constructor(
         val movieDao: MovieDao,
     ) : MovieLocalDataSource {
-        override suspend fun getMovieListResult(): DataMovieListResult {
-            val storageMovieListResult = movieDao.getMovieListResult()
-            val movies = movieDao.getAllMovies()
+        override suspend fun getMovieListResult(page: Int): DataMovieListResult {
+            val storageMovieListResult = movieDao.getMovieListResult(page)
+            val movies = movieDao.getMoviesByPage(page)
             return storageMovieListResult.toMovieListResult(movies)
         }
 
         override suspend fun saveMovieListResult(remoteMovieListResult: RemoteMovieListResult) {
-            movieDao.deleteMovieListResult()
-            movieDao.deleteAllMovies()
+            if (remoteMovieListResult.page == 1) {
+                movieDao.deleteMovieListResult()
+                movieDao.deleteAllMovies()
+            }
             movieDao.insertMovieListResult(remoteMovieListResult.toStorageMovieListResult())
             movieDao.insertAll(
                 remoteMovieListResult.results.map {
@@ -43,7 +45,7 @@ class DefaultMovieLocalDataSource
             )
         }
 
-        override suspend fun hasMovieListResult(): Boolean {
-            return movieDao.hasMovieListResult() > 0
+        override suspend fun hasMovieListResult(page: Int): Boolean {
+            return movieDao.hasMovieListResult(page) > 0
         }
     }

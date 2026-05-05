@@ -1,7 +1,11 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 package com.pperotti.android.moviescatalogapp.presentation.main
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,9 +20,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -34,12 +41,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,14 +72,29 @@ fun MainScreen(
         mainViewModel.requestData()
     }
 
-    // Collect data from the ViewModel and react to it
-    val state = mainViewModel.uiState.collectAsState().value
+    val context = LocalContext.current
+    val state by mainViewModel.uiState.collectAsState()
+
+    LaunchedEffect(mainViewModel.uiEvents) {
+        mainViewModel.uiEvents.collect { event ->
+            when (event) {
+                is UiEvent.ShowNoMoreDataToast ->
+                    Toast.makeText(context, "No more data available", Toast.LENGTH_SHORT).show()
+                is UiEvent.ShowErrorToast ->
+                    Toast.makeText(context, event.message ?: "Unable to load more movies", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     DrawScreenContent(
         uiState = state,
         modifier = modifier,
         onMovieSelected = onMovieSelected,
         onPullToRefresh = {
             mainViewModel.requestData(forceRefresh = true)
+        },
+        onLoadMore = {
+            mainViewModel.requestNextPage()
         },
     )
 }
@@ -81,6 +105,7 @@ fun DrawScreenContent(
     modifier: Modifier,
     onMovieSelected: (id: Int) -> Unit,
     onPullToRefresh: () -> Unit,
+    onLoadMore: () -> Unit,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -89,12 +114,23 @@ fun DrawScreenContent(
         when (uiState) {
             is MainUiState.Loading -> LoadingContent(modifier)
             is MainUiState.Success ->
-                MainListContent(
-                    modifier = modifier.padding(paddingValues),
-                    uiItems = uiState.items,
-                    onMovieSelected = onMovieSelected,
-                    onPullToRefresh = onPullToRefresh,
-                )
+                if (uiState.items.isEmpty()) {
+                    EmptyContent(
+                        modifier = modifier.padding(paddingValues),
+                        onRefresh = onPullToRefresh,
+                    )
+                } else {
+                    MainListContent(
+                        modifier = modifier.padding(paddingValues),
+                        uiItems = uiState.items,
+                        currentPage = uiState.currentPage,
+                        totalPages = uiState.totalPages,
+                        isLoadingMore = uiState.isLoadingMore,
+                        onMovieSelected = onMovieSelected,
+                        onPullToRefresh = onPullToRefresh,
+                        onLoadMore = onLoadMore,
+                    )
+                }
 
             is MainUiState.Error ->
                 ErrorContent(
@@ -109,17 +145,36 @@ fun DrawScreenContent(
 @Composable
 fun MainListContent(
     uiItems: List<MainListItemUiState>,
+    currentPage: Int,
+    totalPages: Int,
+    isLoadingMore: Boolean,
     modifier: Modifier,
     onMovieSelected: (id: Int) -> Unit,
     onPullToRefresh: () -> Unit,
+    onLoadMore: () -> Unit,
 ) {
     val configuration = LocalConfiguration.current
     val columnSize = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 2 else 1
+    val gridState = rememberLazyGridState()
 
     var isRefreshInProgress by remember {
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
+
+    val shouldLoadMore = remember(gridState, currentPage, totalPages, isLoadingMore) {
+        derivedStateOf {
+            val lastVisibleItemIndex = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            val totalItemCount = gridState.layoutInfo.totalItemsCount
+            lastVisibleItemIndex == totalItemCount - 1 && totalItemCount > 0
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore.value, isLoadingMore, currentPage, totalPages) {
+        if (shouldLoadMore.value && !isLoadingMore && currentPage < totalPages) {
+            onLoadMore()
+        }
+    }
 
     PullToRefreshBox(
         isRefreshing = isRefreshInProgress,
@@ -131,15 +186,57 @@ fun MainListContent(
             }
         },
     ) {
-        // Display the appropriate content based on the UI state
         LazyVerticalGrid(
+            state = gridState,
             columns = GridCells.Fixed(columnSize),
             contentPadding = PaddingValues(16.dp),
             modifier = modifier.fillMaxSize(),
         ) {
             items(uiItems) { item ->
                 CardItemComposable(item, onMovieSelected = onMovieSelected)
-                Spacer(modifier = Modifier.height(16.dp)) // Add space between cards
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            if (isLoadingMore) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun EmptyContent(
+    modifier: Modifier = Modifier,
+    onRefresh: () -> Unit,
+) {
+    PullToRefreshBox(
+        isRefreshing = false,
+        onRefresh = onRefresh,
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = stringResource(id = R.string.main_list_empty_state_message),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = onRefresh) {
+                Text(text = stringResource(id = R.string.main_list_empty_state_refresh))
             }
         }
     }
