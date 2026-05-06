@@ -65,8 +65,13 @@ The app uses Android Navigation Component for screen transitions and Jetpack Vie
 5. Test back navigation, configuration changes, and edge cases
 6. No database migration or backwards compatibility concerns
 
-## Open Questions
+## Open Questions and Decisions
 
-- Should scroll position be cleared when user manually refreshes the list (pull-to-refresh)?
-- Should this feature be configurable/toggleable by the user?
-- Do we need to restore offset or only item index?
+- **Should scroll position be cleared when user manually refreshes the list (pull-to-refresh)?**
+  - Yes. Pull-to-refresh indicates the user expects a refreshed list state, so stored scroll position should be cleared to avoid restoring outdated context.
+
+- **Should this feature be configurable/toggleable by the user?**
+  - No. This is a UX quality improvement that should be standard behavior and does not require a user-facing toggle.
+
+- **Do we need to restore offset or only item index?**
+  - Restore both item index and offset. Preserving the exact position improves the visual continuity when returning to the list.
