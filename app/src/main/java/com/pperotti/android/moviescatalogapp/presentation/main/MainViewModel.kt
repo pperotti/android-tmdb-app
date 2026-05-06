@@ -16,6 +16,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+data class ListScrollPosition(
+    val firstVisibleItemIndex: Int,
+    val firstVisibleItemScrollOffset: Int,
+)
+
 @HiltViewModel
 class MainViewModel
     @Inject
@@ -38,12 +43,27 @@ class MainViewModel
         private var totalPages = 1
         private var isLoadingMore = false
         private var selectedMovieId: Int? = null
+        private var listScrollPosition: ListScrollPosition? = null
 
         fun requestData(forceRefresh: Boolean = false) {
             if (forceRefresh) {
                 selectedMovieId = null
+                clearScrollPosition()
             }
             loadMovies(page = 1, forceRefresh = forceRefresh, append = false)
+        }
+
+        fun saveScrollPosition(firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) {
+            listScrollPosition = ListScrollPosition(
+                firstVisibleItemIndex = firstVisibleItemIndex,
+                firstVisibleItemScrollOffset = firstVisibleItemScrollOffset,
+            )
+        }
+
+        fun getListScrollPosition(): ListScrollPosition? = listScrollPosition
+
+        fun clearScrollPosition() {
+            listScrollPosition = null
         }
 
         fun requestNextPage() {

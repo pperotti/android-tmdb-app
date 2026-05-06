@@ -43,6 +43,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -69,13 +71,16 @@ fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     onMovieSelected: (id: Int) -> Unit,
 ) {
-    // Invoke fetchData when the screen is first displayed
-    LaunchedEffect(true) {
-        mainViewModel.requestData()
-    }
-
     val context = LocalContext.current
     val state by mainViewModel.uiState.collectAsState()
+    val currentScrollPosition = mainViewModel.getListScrollPosition()
+
+    // Invoke fetchData only when the screen is still loading.
+    LaunchedEffect(state) {
+        if (state is MainUiState.Loading) {
+            mainViewModel.requestData()
+        }
+    }
 
     LaunchedEffect(mainViewModel.uiEvents) {
         mainViewModel.uiEvents.collect { event ->
@@ -91,6 +96,10 @@ fun MainScreen(
     DrawScreenContent(
         uiState = state,
         modifier = modifier,
+        initialScrollPosition = currentScrollPosition,
+        onScrollPositionChanged = { index, offset ->
+            mainViewModel.saveScrollPosition(index, offset)
+        },
         onMovieSelected = { id ->
             mainViewModel.selectMovie(id)
             onMovieSelected(id)
@@ -108,6 +117,8 @@ fun MainScreen(
 fun DrawScreenContent(
     uiState: MainUiState,
     modifier: Modifier,
+    initialScrollPosition: ListScrollPosition?,
+    onScrollPositionChanged: (firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) -> Unit,
     onMovieSelected: (id: Int) -> Unit,
     onPullToRefresh: () -> Unit,
     onLoadMore: () -> Unit,
@@ -135,6 +146,8 @@ fun DrawScreenContent(
                         onMovieSelected = onMovieSelected,
                         onPullToRefresh = onPullToRefresh,
                         onLoadMore = onLoadMore,
+                        initialScrollPosition = initialScrollPosition,
+                        onScrollPositionChanged = onScrollPositionChanged,
                     )
                 }
 
@@ -159,10 +172,15 @@ fun MainListContent(
     onMovieSelected: (id: Int) -> Unit,
     onPullToRefresh: () -> Unit,
     onLoadMore: () -> Unit,
+    initialScrollPosition: ListScrollPosition?,
+    onScrollPositionChanged: (firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) -> Unit,
 ) {
     val configuration = LocalConfiguration.current
     val columnSize = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 2 else 1
-    val gridState = rememberLazyGridState()
+    val gridState = rememberLazyGridState(
+        initialFirstVisibleItemIndex = initialScrollPosition?.firstVisibleItemIndex ?: 0,
+        initialFirstVisibleItemScrollOffset = initialScrollPosition?.firstVisibleItemScrollOffset ?: 0,
+    )
 
     var isRefreshInProgress by remember {
         mutableStateOf(false)
@@ -175,6 +193,14 @@ fun MainListContent(
             val totalItemCount = gridState.layoutInfo.totalItemsCount
             lastVisibleItemIndex == totalItemCount - 1 && totalItemCount > 0
         }
+    }
+
+    LaunchedEffect(gridState) {
+        snapshotFlow { gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset }
+            .distinctUntilChanged()
+            .collect { (index, offset) ->
+                onScrollPositionChanged(index, offset)
+            }
     }
 
     LaunchedEffect(shouldLoadMore.value, isLoadingMore, currentPage, totalPages) {
@@ -200,7 +226,17 @@ fun MainListContent(
             modifier = modifier.fillMaxSize(),
         ) {
             items(uiItems) { item ->
-                CardItemComposable(item, selectedMovieId = selectedMovieId, onMovieSelected = onMovieSelected)
+                CardItemComposable(
+                    item,
+                    selectedMovieId = selectedMovieId,
+                    onMovieSelected = {
+                        onScrollPositionChanged(
+                            gridState.firstVisibleItemIndex,
+                            gridState.firstVisibleItemScrollOffset,
+                        )
+                        onMovieSelected(it)
+                    },
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
