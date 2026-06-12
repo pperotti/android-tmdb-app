@@ -49,6 +49,7 @@ import com.pperotti.android.moviescatalogapp.presentation.common.ErrorContent
 import com.pperotti.android.moviescatalogapp.presentation.common.LoadingContent
 import com.pperotti.android.moviescatalogapp.presentation.common.MessageItemComposable
 import com.pperotti.android.moviescatalogapp.presentation.common.TextWithIconRowComposable
+import com.pperotti.android.moviescatalogapp.presentation.common.formatRevenue
 
 /**
  * Show the details of the movie or an error
@@ -214,7 +215,8 @@ fun DrawDetailsContent(
     MessageItemComposable(R.string.details_imdb_id, uiState.details.imdbId ?: "-")
     MessageItemComposable(R.string.details_homepage, uiState.details.homepage ?: "-")
     MessageItemComposable(R.string.details_overview, uiState.details.overview ?: "-")
-    MessageItemComposable(R.string.details_revenue, uiState.details.revenue.toString())
+    val revenueText = formatRevenue(uiState.details.revenue, unknownPlaceholder = stringResource(R.string.details_revenue_unknown))
+    MessageItemComposable(R.string.details_revenue, revenueText)
     MessageItemComposable(R.string.details_status, uiState.details.status ?: "-")
     MessageItemComposable(R.string.details_vote_average, uiState.details.voteAverage.toString())
     MessageItemComposable(R.string.details_vote_count, uiState.details.voteCount.toString())

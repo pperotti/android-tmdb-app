@@ -53,11 +53,15 @@ class MainViewModel
             loadMovies(page = 1, forceRefresh = forceRefresh, append = false)
         }
 
-        fun saveScrollPosition(firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) {
-            listScrollPosition = ListScrollPosition(
-                firstVisibleItemIndex = firstVisibleItemIndex,
-                firstVisibleItemScrollOffset = firstVisibleItemScrollOffset,
-            )
+        fun saveScrollPosition(
+            firstVisibleItemIndex: Int,
+            firstVisibleItemScrollOffset: Int,
+        ) {
+            listScrollPosition =
+                ListScrollPosition(
+                    firstVisibleItemIndex = firstVisibleItemIndex,
+                    firstVisibleItemScrollOffset = firstVisibleItemScrollOffset,
+                )
         }
 
         fun getListScrollPosition(): ListScrollPosition? = listScrollPosition
@@ -82,68 +86,73 @@ class MainViewModel
             }
         }
 
-        private fun loadMovies(page: Int, forceRefresh: Boolean, append: Boolean) {
+        private fun loadMovies(
+            page: Int,
+            forceRefresh: Boolean,
+            append: Boolean,
+        ) {
             fetchJob?.cancel()
-            fetchJob = viewModelScope.launch {
-                if (!append) {
-                    selectedMovieId = null
-                }
-                if (append) {
-                    _uiState.value = MainUiState.Success(
-                        items = currentItems,
-                        currentPage = currentPage,
-                        totalPages = totalPages,
-                        isLoadingMore = true,
-                        selectedMovieId = selectedMovieId,
-                    )
-                } else {
-                    _uiState.value = MainUiState.Loading
-                }
-
-                when (
-                    val domainResponse =
-                        getLatestMovies.getLatestMovies(
-                            page = page,
-                            forceRefresh = forceRefresh,
-                        )
-                ) {
-                    is DomainResult.Success -> {
-                        val mergedItems = transformDomainResultIntoUiResult(domainResponse.result, append)
-                        currentItems = mergedItems
-                        currentPage = domainResponse.result.page
-                        totalPages = domainResponse.result.totalPages
-                        isLoadingMore = false
-
-                        _uiState.value = MainUiState.Success(
-                            items = mergedItems,
-                            currentPage = currentPage,
-                            totalPages = totalPages,
-                            isLoadingMore = false,
-                            selectedMovieId = selectedMovieId,
-                        )
-
-                        if (append && domainResponse.result.results.isEmpty()) {
-                            _uiEvents.tryEmit(UiEvent.ShowNoMoreDataToast)
-                        }
+            fetchJob =
+                viewModelScope.launch {
+                    if (!append) {
+                        selectedMovieId = null
                     }
-
-                    is DomainResult.Error -> {
-                        if (append) {
-                            _uiState.value = MainUiState.Success(
+                    if (append) {
+                        _uiState.value =
+                            MainUiState.Success(
                                 items = currentItems,
                                 currentPage = currentPage,
                                 totalPages = totalPages,
-                                isLoadingMore = false,
+                                isLoadingMore = true,
                                 selectedMovieId = selectedMovieId,
                             )
-                            _uiEvents.tryEmit(
-                                UiEvent.ShowErrorToast(domainResponse.message ?: "Unable to load more movies"),
-                            )
-                        } else {
-                            _uiState.value = MainUiState.Error(domainResponse.message)
-                        }
+                    } else {
+                        _uiState.value = MainUiState.Loading
+                    }
+
+                    val domainResponse = getLatestMovies.getLatestMovies(page = page, forceRefresh = forceRefresh)
+
+                    when (domainResponse) {
+                        is DomainResult.Success -> handleLoadSuccess(domainResponse, append)
+                        is DomainResult.Error -> handleLoadError(domainResponse, append)
                     }
                 }
+        }
+
+        private fun handleLoadSuccess(domainResponse: DomainResult.Success<DomainMovieListResult>, append: Boolean) {
+            val mergedItems = transformDomainResultIntoUiResult(domainResponse.result, append)
+            currentItems = mergedItems
+            currentPage = domainResponse.result.page
+            totalPages = domainResponse.result.totalPages
+            isLoadingMore = false
+
+            _uiState.value =
+                MainUiState.Success(
+                    items = mergedItems,
+                    currentPage = currentPage,
+                    totalPages = totalPages,
+                    isLoadingMore = false,
+                    selectedMovieId = selectedMovieId,
+                )
+
+            if (append && domainResponse.result.results.isEmpty()) {
+                _uiEvents.tryEmit(UiEvent.ShowNoMoreDataToast)
+            }
+        }
+
+        private fun handleLoadError(domainResponse: DomainResult.Error<*>, append: Boolean) {
+            if (append) {
+                _uiState.value =
+                    MainUiState.Success(
+                        items = currentItems,
+                        currentPage = currentPage,
+                        totalPages = totalPages,
+                        isLoadingMore = false,
+                        selectedMovieId = selectedMovieId,
+                    )
+                _uiEvents.tryEmit(UiEvent.ShowErrorToast(domainResponse.message ?: "Unable to load more movies"))
+            } else {
+                _uiState.value = MainUiState.Error(domainResponse.message)
             }
         }
 
@@ -151,15 +160,16 @@ class MainViewModel
             domainMovieListResult: DomainMovieListResult,
             append: Boolean,
         ): List<MainListItemUiState> {
-            val resultList = domainMovieListResult.results.map { movie ->
-                MainListItemUiState(
-                    id = movie.id,
-                    title = movie.title,
-                    overview = movie.overview,
-                    popularity = movie.popularity,
-                    posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}",
-                )
-            }
+            val resultList =
+                domainMovieListResult.results.map { movie ->
+                    MainListItemUiState(
+                        id = movie.id,
+                        title = movie.title,
+                        overview = movie.overview,
+                        popularity = movie.popularity,
+                        posterPath = "https://image.tmdb.org/t/p/original/${movie.posterPath}",
+                    )
+                }
 
             return if (append) {
                 currentItems + resultList
@@ -171,5 +181,6 @@ class MainViewModel
 
 sealed class UiEvent {
     object ShowNoMoreDataToast : UiEvent()
+
     data class ShowErrorToast(val message: String) : UiEvent()
 }
