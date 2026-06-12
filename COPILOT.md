@@ -230,6 +230,7 @@ Follow the **Conventional Commits** specification:
 - `chore`: Changes to build process or auxiliary tools
 - `perf`: Performance improvements
 - `ci`: CI/CD configuration changes
+- `config`: To reflect changes in the project's configuration
 
 **Examples**:
 ```
