@@ -493,6 +493,7 @@ Related to #(issue number)
 - Never ignore ktlint or detekt warnings without good reason
 - Never hardcode strings, colors, or dimensions
 - Never make network calls on the main thread
+- Never include the line 'Co-authored-by: Copilot' line
 
 ## AI Assistant Guidelines
 
