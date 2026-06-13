@@ -17,8 +17,9 @@
     <!-- Details Screen -->
     <string name="details_imdb_id">"IMDb ID: "</string>
     <string name="details_overview">Overview: </string>
-    <string name="details_revenue">Revenue $ </string>
-    <string name="details_status">Status: </string>
+    <string name="details_revenue">"Revenue: "</string>
+    <string name="details_revenue_unknown">N/A</string>
+    <string name="details_status">"Status: "</string>
     <string name="details_vote_average">Average Votes: </string>
     <string name="details_vote_count">Vote Count: </string>
     <string name="details_homepage">Website: </string>

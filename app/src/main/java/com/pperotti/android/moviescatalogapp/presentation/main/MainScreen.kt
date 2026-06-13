@@ -37,14 +37,13 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,7 +62,15 @@ import coil3.request.crossfade
 import com.pperotti.android.moviescatalogapp.R
 import com.pperotti.android.moviescatalogapp.presentation.common.ErrorContent
 import com.pperotti.android.moviescatalogapp.presentation.common.LoadingContent
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+
+data class MainScreenActions(
+    val onScrollPositionChanged: (firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) -> Unit,
+    val onMovieSelected: (id: Int) -> Unit,
+    val onPullToRefresh: () -> Unit,
+    val onLoadMore: () -> Unit,
+)
 
 @Composable
 fun MainScreen(
@@ -93,35 +100,28 @@ fun MainScreen(
         }
     }
 
+    val actions = MainScreenActions(
+        onScrollPositionChanged = { index, offset -> mainViewModel.saveScrollPosition(index, offset) },
+        onMovieSelected = { id -> mainViewModel.selectMovie(id); onMovieSelected(id) },
+        onPullToRefresh = { mainViewModel.requestData(forceRefresh = true) },
+        onLoadMore = { mainViewModel.requestNextPage() },
+    )
+
     DrawScreenContent(
         uiState = state,
         modifier = modifier,
         initialScrollPosition = currentScrollPosition,
-        onScrollPositionChanged = { index, offset ->
-            mainViewModel.saveScrollPosition(index, offset)
-        },
-        onMovieSelected = { id ->
-            mainViewModel.selectMovie(id)
-            onMovieSelected(id)
-        },
-        onPullToRefresh = {
-            mainViewModel.requestData(forceRefresh = true)
-        },
-        onLoadMore = {
-            mainViewModel.requestNextPage()
-        },
+        actions = actions,
     )
 }
 
+@Suppress("FunctionNaming")
 @Composable
 fun DrawScreenContent(
     uiState: MainUiState,
     modifier: Modifier,
     initialScrollPosition: ListScrollPosition?,
-    onScrollPositionChanged: (firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) -> Unit,
-    onMovieSelected: (id: Int) -> Unit,
-    onPullToRefresh: () -> Unit,
-    onLoadMore: () -> Unit,
+    actions: MainScreenActions,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -133,21 +133,25 @@ fun DrawScreenContent(
                 if (uiState.items.isEmpty()) {
                     EmptyContent(
                         modifier = modifier.padding(paddingValues),
-                        onRefresh = onPullToRefresh,
+                        onRefresh = actions.onPullToRefresh,
                     )
                 } else {
                     MainListContent(
-                        modifier = modifier.padding(paddingValues),
-                        uiItems = uiState.items,
-                        currentPage = uiState.currentPage,
-                        totalPages = uiState.totalPages,
-                        isLoadingMore = uiState.isLoadingMore,
-                        selectedMovieId = uiState.selectedMovieId,
-                        onMovieSelected = onMovieSelected,
-                        onPullToRefresh = onPullToRefresh,
-                        onLoadMore = onLoadMore,
-                        initialScrollPosition = initialScrollPosition,
-                        onScrollPositionChanged = onScrollPositionChanged,
+                       modifier = modifier.padding(paddingValues),
+                       state = MainListState(
+                           uiItems = uiState.items,
+                           currentPage = uiState.currentPage,
+                           totalPages = uiState.totalPages,
+                           isLoadingMore = uiState.isLoadingMore,
+                           selectedMovieId = uiState.selectedMovieId,
+                       ),
+                       initialScrollPosition = initialScrollPosition,
+                       actions = MainListActions(
+                           onMovieSelected = actions.onMovieSelected,
+                           onPullToRefresh = actions.onPullToRefresh,
+                           onLoadMore = actions.onLoadMore,
+                           onScrollPositionChanged = actions.onScrollPositionChanged,
+                       ),
                     )
                 }
 
@@ -161,61 +165,96 @@ fun DrawScreenContent(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+data class MainListState(
+    val uiItems: List<MainListItemUiState>,
+    val currentPage: Int,
+    val totalPages: Int,
+    val isLoadingMore: Boolean,
+    val selectedMovieId: Int?,
+)
+
+data class MainListActions(
+    val onMovieSelected: (id: Int) -> Unit,
+    val onPullToRefresh: () -> Unit,
+    val onLoadMore: () -> Unit,
+    val onScrollPositionChanged: (firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) -> Unit,
+)
+
+@Suppress("FunctionNaming", "LongMethod")
 @Composable
 fun MainListContent(
-    uiItems: List<MainListItemUiState>,
-    currentPage: Int,
-    totalPages: Int,
-    isLoadingMore: Boolean,
-    selectedMovieId: Int?,
+    state: MainListState,
     modifier: Modifier,
-    onMovieSelected: (id: Int) -> Unit,
-    onPullToRefresh: () -> Unit,
-    onLoadMore: () -> Unit,
     initialScrollPosition: ListScrollPosition?,
-    onScrollPositionChanged: (firstVisibleItemIndex: Int, firstVisibleItemScrollOffset: Int) -> Unit,
+    actions: MainListActions,
 ) {
     val configuration = LocalConfiguration.current
     val columnSize = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 2 else 1
-    val gridState = rememberLazyGridState(
-        initialFirstVisibleItemIndex = initialScrollPosition?.firstVisibleItemIndex ?: 0,
-        initialFirstVisibleItemScrollOffset = initialScrollPosition?.firstVisibleItemScrollOffset ?: 0,
-    )
+    val gridState =
+        rememberLazyGridState(
+            initialFirstVisibleItemIndex = initialScrollPosition?.firstVisibleItemIndex ?: 0,
+            initialFirstVisibleItemScrollOffset = initialScrollPosition?.firstVisibleItemScrollOffset ?: 0,
+        )
 
     var isRefreshInProgress by remember {
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
 
-    val shouldLoadMore = remember(gridState, currentPage, totalPages, isLoadingMore) {
-        derivedStateOf {
-            val lastVisibleItemIndex = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-            val totalItemCount = gridState.layoutInfo.totalItemsCount
-            lastVisibleItemIndex == totalItemCount - 1 && totalItemCount > 0
+    val shouldLoadMore =
+        remember(gridState, state.currentPage, state.totalPages, state.isLoadingMore) {
+            derivedStateOf {
+                val lastVisibleItemIndex = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+                val totalItemCount = gridState.layoutInfo.totalItemsCount
+                lastVisibleItemIndex == totalItemCount - 1 && totalItemCount > 0
+            }
         }
-    }
 
     LaunchedEffect(gridState) {
         snapshotFlow { gridState.firstVisibleItemIndex to gridState.firstVisibleItemScrollOffset }
             .distinctUntilChanged()
             .collect { (index, offset) ->
-                onScrollPositionChanged(index, offset)
+                actions.onScrollPositionChanged(index, offset)
             }
     }
 
-    LaunchedEffect(shouldLoadMore.value, isLoadingMore, currentPage, totalPages) {
-        if (shouldLoadMore.value && !isLoadingMore && currentPage < totalPages) {
-            onLoadMore()
+    LaunchedEffect(shouldLoadMore.value, state.isLoadingMore, state.currentPage, state.totalPages) {
+        if (shouldLoadMore.value && !state.isLoadingMore && state.currentPage < state.totalPages) {
+            actions.onLoadMore()
         }
     }
 
+    MainListGrid(
+        modifier = modifier,
+        gridState = gridState,
+        columnSize = columnSize,
+        state = state,
+        actions = actions,
+        isRefreshInProgress = isRefreshInProgress,
+        setIsRefreshInProgress = { isRefreshInProgress = it },
+        coroutineScope = coroutineScope,
+    )
+}
+
+@Suppress("LongParameterList", "MagicNumber")
+@Composable
+private fun MainListGrid(
+    modifier: Modifier,
+    gridState: androidx.compose.foundation.lazy.grid.LazyGridState,
+    columnSize: Int,
+    state: MainListState,
+    actions: MainListActions,
+    isRefreshInProgress: Boolean,
+    setIsRefreshInProgress: (Boolean) -> Unit,
+    coroutineScope: kotlinx.coroutines.CoroutineScope,
+) {
     PullToRefreshBox(
         isRefreshing = isRefreshInProgress,
         onRefresh = {
-            isRefreshInProgress = true
+            setIsRefreshInProgress(true)
             coroutineScope.launch {
-                onPullToRefresh()
-                isRefreshInProgress = false
+                actions.onPullToRefresh()
+                setIsRefreshInProgress(false)
             }
         },
     ) {
@@ -225,27 +264,28 @@ fun MainListContent(
             contentPadding = PaddingValues(16.dp),
             modifier = modifier.fillMaxSize(),
         ) {
-            items(uiItems) { item ->
+            items(state.uiItems) { item ->
                 CardItemComposable(
                     item,
-                    selectedMovieId = selectedMovieId,
+                    selectedMovieId = state.selectedMovieId,
                     onMovieSelected = {
-                        onScrollPositionChanged(
+                        actions.onScrollPositionChanged(
                             gridState.firstVisibleItemIndex,
                             gridState.firstVisibleItemScrollOffset,
                         )
-                        onMovieSelected(it)
+                        actions.onMovieSelected(it)
                     },
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            if (isLoadingMore) {
+            if (state.isLoadingMore) {
                 item {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator()
@@ -266,9 +306,10 @@ fun EmptyContent(
         onRefresh = onRefresh,
     ) {
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(32.dp),
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -309,49 +350,55 @@ fun CardItemComposable(
             onMovieSelected(item.id)
         },
     ) {
-        Row(
+        CardItemBody(item)
+    }
+}
+
+@Suppress("MagicNumber")
+@Composable
+private fun CardItemBody(item: MainListItemUiState) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AsyncImage(
+            model =
+                ImageRequest.Builder(LocalContext.current)
+                    .data(item.posterPath)
+                    .crossfade(true)
+                    .build(),
+            contentDescription = item.title,
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            AsyncImage(
-                model =
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(item.posterPath)
-                        .crossfade(true)
-                        .build(),
-                contentDescription = item.title,
+                    .fillMaxWidth(0.3f)
+                    .fillMaxHeight(),
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(
+                text = item.title ?: "-",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+            )
+            Spacer(
                 modifier =
                     Modifier
-                        .fillMaxWidth(0.3f)
-                        .fillMaxHeight(),
+                        .background(color = MaterialTheme.colorScheme.primary)
+                        .fillMaxWidth()
+                        .height(2.dp),
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = item.title ?: "-",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                )
-                Spacer(
-                    modifier =
-                        Modifier
-                            .background(color = MaterialTheme.colorScheme.primary)
-                            .fillMaxWidth()
-                            .height(2.dp),
-                )
-                Text(text = "Rating: ${item.popularity}")
-                Text(
-                    text = item.overview ?: "-",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 14.sp,
-                    maxLines = 5,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            Text(text = "Rating: ${item.popularity}")
+            Text(
+                text = item.overview ?: "-",
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 14.sp,
+                maxLines = 5,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }
