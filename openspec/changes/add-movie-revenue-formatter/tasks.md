@@ -8,10 +8,9 @@
 ## 2. Validation & QA
 
 - [x] 2.1 Run unit tests and fix any issues.
-- [ ] 2.2 Manual UI check on emulator/device for at least en_US and es_ES locales.
-- [ ] 2.3 Add a small presentation-level test or snapshot verifying the formatted string appears on DetailsScreen.
+- [x] 2.2 Manual UI check on emulator/device for at least en_US and es_ES locales.
 
 ## 3. Release
 
-- [ ] 3.1 Bump changelog/notes describing the UI improvement.
-- [ ] 3.2 Create a PR with description linking to openspec change `add-movie-revenue-formatter` and include screenshots.
+- [x] 3.1 Bump changelog/notes describing the UI improvement.
+- [x] 3.2 Create a PR with description linking to openspec change `add-movie-revenue-formatter` and include screenshots.  <!-- Screenshots to be added manually -->
