@@ -2,11 +2,8 @@ package com.pperotti.android.moviescatalogapp.presentation.details
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
-import com.pperotti.android.moviescatalogapp.presentation.details.DetailsUiData
-import com.pperotti.android.moviescatalogapp.presentation.details.DetailsUiGenre
-import com.pperotti.android.moviescatalogapp.presentation.details.DetailsUiState
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -44,7 +41,10 @@ class DetailsScreenRevenueTest {
 
         // Act
         composeTestRule.setContent {
-            DrawDetailsContent(DetailsUiState.Success(details), modifier = androidx.compose.ui.Modifier)
+            DrawDetailsContent(
+                DetailsUiState.Success(details),
+                modifier = androidx.compose.ui.Modifier
+            )
         }
 
         // Assert: the formatted revenue should be present in the composed text
