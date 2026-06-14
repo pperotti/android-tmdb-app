@@ -54,8 +54,9 @@ fun LinkMessageItemComposable(
                         .typography
                         .bodyMedium
                         .toSpanStyle()
-                        .copy(fontWeight = FontWeight.Normal, fontSize = 18.sp),
+                        .copy(fontWeight = FontWeight.Normal, fontSize = 18.sp, color = MaterialTheme.colorScheme.primary),
             ) {
+                append(" ")
                 append(formatted.displayText)
             }
         }
