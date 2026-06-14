@@ -24,5 +24,5 @@
 ## 5. Documentation & PR
 
 - [x] 5.1 Add a short note in CHANGELOG or docs describing the new capability and where to use it
-- [ ] 5.2 Create a PR with description referencing openspec/changes/url-formatter and include screenshots or intent test logs
+- [x] 5.2 Create a PR with description referencing openspec/changes/url-formatter and include screenshots or intent test logs
 
