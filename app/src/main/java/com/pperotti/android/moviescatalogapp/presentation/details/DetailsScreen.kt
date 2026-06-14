@@ -50,6 +50,7 @@ import com.pperotti.android.moviescatalogapp.presentation.common.LoadingContent
 import com.pperotti.android.moviescatalogapp.presentation.common.MessageItemComposable
 import com.pperotti.android.moviescatalogapp.presentation.common.TextWithIconRowComposable
 import com.pperotti.android.moviescatalogapp.presentation.common.formatRevenue
+import com.pperotti.android.moviescatalogapp.presentation.common.LinkMessageItemComposable
 
 /**
  * Show the details of the movie or an error
@@ -213,7 +214,8 @@ fun DrawDetailsContent(
                 .height(2.dp),
     )
     MessageItemComposable(R.string.details_imdb_id, uiState.details.imdbId ?: "-")
-    MessageItemComposable(R.string.details_homepage, uiState.details.homepage ?: "-")
+    // Render homepage as a clickable link when available
+    LinkMessageItemComposable(R.string.details_homepage, uiState.details.homepage)
     MessageItemComposable(R.string.details_overview, uiState.details.overview ?: "-")
     val revenueText = formatRevenue(uiState.details.revenue, unknownPlaceholder = stringResource(R.string.details_revenue_unknown))
     MessageItemComposable(R.string.details_revenue, revenueText)

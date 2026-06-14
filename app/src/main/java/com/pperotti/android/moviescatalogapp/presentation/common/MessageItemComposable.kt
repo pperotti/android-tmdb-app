@@ -7,7 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -19,7 +19,7 @@ fun MessageItemComposable(
     @StringRes textRes: Int,
     textValue: String = "",
 ) {
-    val title = LocalContext.current.getString(textRes)
+    val title = stringResource(textRes)
     val annotatedString =
         buildAnnotatedString {
             withStyle(
